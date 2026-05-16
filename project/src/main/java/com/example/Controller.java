@@ -9,8 +9,13 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Controller {
     private Client ftpClient;
+
+    private static final Logger logger = LogManager.getLogger(Controller.class);
 
     @FXML private TextField hostField;
     @FXML private TextField portField;
@@ -35,5 +40,13 @@ public class Controller {
     
     @FXML private ProgressIndicator progressIndicator;
 
-    
+    @FXML 
+    public void initialize() {
+
+    }
+
+    // Bring log to the UI
+    public void log(Logger Log) {
+        logArea.appendText(Log + "\r\n");
+    }
 }
