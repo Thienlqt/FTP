@@ -1,6 +1,7 @@
 package com.example;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -53,6 +54,10 @@ public class Controller {
     private Button connectBtn;
     @FXML
     private Button disconnectBtn;
+    @FXML
+    private Button rmdirBtn;
+    @FXML
+    private Button delBtn;
 
     @FXML
     private Label statusLabel; // connected / disconnected ?
@@ -82,6 +87,14 @@ public class Controller {
         log("Welcome to FTP Client. Ready to connect.");
 
         remoteListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        rmdirBtn.disableProperty().bind(
+            Bindings.isEmpty(remoteListView.getSelectionModel().getSelectedItems())
+        );
+
+        delBtn.disableProperty().bind(
+            Bindings.isEmpty(remoteListView.getSelectionModel().getSelectedItems())
+        );
     }
 
     // Bring log to the UI
@@ -165,7 +178,7 @@ public class Controller {
         /* ── Helper to get multiple items from ls() ─────────────────────────────────────────────── */
 
     @FXML
-    private List<String> getSelectedItems() {
+    private List<String> getChosenItems() {
         ObservableList<String> selectedItems = remoteListView.getSelectionModel().getSelectedItems();
         List<String> fullpaths = new ArrayList<>();
 
@@ -302,7 +315,7 @@ public class Controller {
 
     @FXML
     public void showRmdirForm() {
-        List<String> contentsToDelete = getSelectedItems();
+        List<String> contentsToDelete = getChosenItems();
         try {
             dirsToDelete.setText(String.join("\n", contentsToDelete));
             rmdirForm.setVisible(true);
@@ -331,7 +344,7 @@ public class Controller {
     @FXML
     public void handleRmdir() {
         try {
-            ftpClient.rmdir(getSelectedItems());
+            ftpClient.rmdir(getChosenItems());
             log("Directory removed successfully!");
             logger.info("Directory removed successfully!");
         } catch (Exception e) {
@@ -344,7 +357,7 @@ public class Controller {
 
     @FXML
     public void showDelForm() {
-        List<String> contentsToDelete = getSelectedItems();
+        List<String> contentsToDelete = getChosenItems();
         try {
             filesToDelete.setText(String.join("\n", contentsToDelete));
             delForm.setVisible(true);
@@ -365,6 +378,18 @@ public class Controller {
         } catch (Exception e) {
             log("Error during closing the form: " + e.getMessage());
             logger.error("Error during closing the form: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void handleDel() {
+        try {
+            ftpClient.del(getChosenItems());
+            log("Files deleted successfully!");
+            logger.info("Files deleted successfully");
+        } catch (Exception e) {
+            log("Error during deleting files: " + e.getMessage());
+            logger.error("Error during deleting files: " + e.getMessage());
         }
     }
 }
