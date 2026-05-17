@@ -12,6 +12,9 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
+import javafx.scene.layout.StackPane;
+
+import javax.swing.Action;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,31 +25,52 @@ public class Controller {
 
     private static final Logger logger = LogManager.getLogger(Controller.class);
 
-    @FXML private TextField hostField;
-    @FXML private TextField userField;
-    @FXML private TextField remotePathField; // show path for pwd cmd
-    @FXML private TextField rawCmdField; // show what cmds were used
-    @FXML private TextField mkdirName; // name the dir to create
+    @FXML
+    private TextField hostField;
+    @FXML
+    private TextField userField;
+    @FXML
+    private TextField remotePathField; // show path for pwd cmd
+    @FXML
+    private TextField rawCmdField; // show what cmds were used
+    @FXML
+    private TextField mkdirName; // name the dir to create
 
-    @FXML private TextArea logArea;
+    @FXML
+    private TextArea logArea;
 
-    @FXML private PasswordField passField; // hide the password
+    @FXML
+    private PasswordField passField; // hide the password
 
-    @FXML private Button lsBtn;
-    @FXML private Button connectBtn;
-    @FXML private Button disconnectBtn;
+    @FXML
+    private Button lsBtn;
+    @FXML
+    private Button connectBtn;
+    @FXML
+    private Button disconnectBtn;
 
-    @FXML private Label statusLabel; // connected / disconnected ?
-    @FXML private Label remoteCountLabel; // count the number of files on the connected server
-    @FXML private Label bottomStatusLabel;
+    @FXML
+    private Label statusLabel; // connected / disconnected ?
+    @FXML
+    private Label remoteCountLabel; // count the number of files on the connected server
+    @FXML
+    private Label bottomStatusLabel;
 
-    @FXML private ToolBar actionToolbar; // all cmds are managed here
-    
-    @FXML private ListView<String> remoteListView; // file list from "ls" command
-    
-    @FXML private ProgressIndicator progressIndicator;
+    @FXML
+    private ToolBar actionToolbar; // all cmds are managed here
 
-    @FXML 
+    @FXML
+    private ListView<String> remoteListView; // file list from "ls" command
+
+    @FXML
+    private ProgressIndicator progressIndicator;
+
+    @FXML
+    private StackPane mkdirForm; // pop-up form for the creating dir
+    @FXML
+    private StackPane rmdirForm; // pop-up form for removing dir
+
+    @FXML
     public void initialize() {
         log("Welcome to FTP Client. Ready to connect.");
     }
@@ -56,7 +80,7 @@ public class Controller {
         Platform.runLater(() -> logArea.appendText(message + "\r\n"));
     }
 
-    @FXML 
+    @FXML
     public void handleConnect(ActionEvent event) {
         String host = hostField.getText().trim();
         String user = userField.getText().trim();
@@ -89,12 +113,10 @@ public class Controller {
 
             log("Connected successfully!");
             logger.info("Connected successfully");
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             log("Port must be a valid number: " + e.getMessage());
             logger.error("Port must be a valid number: " + e.getMessage());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log("Connection error: " + e.getMessage());
             logger.error("Connection error: " + e.getMessage());
         }
@@ -107,8 +129,7 @@ public class Controller {
                 ftpClient.quit();
                 log("Disconnect from server.");
                 logger.info("Disconnect from server.");
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 log("Error during disconnection: " + e.getMessage());
                 logger.error("Error during disconnection: " + e.getMessage());
             }
@@ -128,31 +149,71 @@ public class Controller {
         }
     }
 
-    @FXML 
-    public void handleLs() {
+    @FXML
+    public void handleLs(ActionEvent event) {
         try {
-            // have to convert the data structure of ls() 
+            // have to convert the data structure of ls()
             // from ArrayList<String> to observableArrayList
             // in order to be able to display to the field remoteListView in UI.
             remoteListView.setItems(FXCollections.observableArrayList(ftpClient.ls()));
             log("Listed directories & files successfully!");
             logger.info("Listed directories & files successfully!");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log("Error during listing directory & files: " + e.getMessage());
             logger.error("Error during listing directory & files: " + e.getMessage());
         }
     }
 
+    /* ── Mkdir Form ─────────────────────────────────────────────── */
+
     @FXML
-    public void handleMkdir() {
+    public void showMkdirForm(ActionEvent event) {
         try {
-            // 1. create pop up form in fxml
-            // 2. create mkdirFieldName
-            ftpClient.mkdir(mkdirName.getText());
+            mkdirName.clear();
+            mkdirName.setText("New Directory");
+            mkdirForm.setVisible(true);
+            mkdirForm.requestFocus(); // bring the cursor to inside the textfield
+            mkdirName.selectAll(); // cover all the content of the textfield, easy to overwrite
+            log("show the form successfully!");
+            logger.info("show the form successfully!");
+        } catch (Exception e) {
+            log("Error during showing the form: " + e.getMessage());
+            logger.error("Error during showing the form: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void hideMkdirForm(ActionEvent event) {
+        try {
+            mkdirForm.setVisible(false);
+            log("Closing the form successfully!");
+            logger.info("Closing the form successfully!");
+        } catch (Exception e) {
+            log("Error during closing the form: " + e.getMessage());
+            logger.error("Error during closing the form: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void handleMkdir(ActionEvent event) {
+        String dirName = mkdirName.getText().trim();
+        if (dirName.isEmpty()) {
+            log("Folder name cannot be empty!");
+            logger.error("Folder name cannot be empty!");
+            return;
+        }
+        try {
+            ftpClient.mkdir(dirName);
+            log("Created directory '" + dirName + "' successfully!");
         } catch (Exception e) {
             log("Error during creating directory: " + e.getMessage());
             logger.error("Error during creating directory: " + e.getMessage());
         }
+    }
+/* ── Rmdir Form ─────────────────────────────────────────────── */
+
+    @FXML
+    public void showRmdirForm(ActionEvent event) {
+        
     }
 }

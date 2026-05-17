@@ -5,126 +5,127 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.Controller"
-            styleClass="root-pane">
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.Controller"
+           styleClass="root-pane">
 
-    <!-- ═══════════════════════  TOP – Login Bar  ═══════════════════════ -->
-    <top>
-        <VBox styleClass="top-bar" spacing="0">
-
-            <!-- Title strip -->
-            <HBox styleClass="title-strip" alignment="CENTER_LEFT" spacing="10">
-                <padding><Insets top="10" right="16" bottom="10" left="16"/></padding>
-                <Label text="FTP Client" styleClass="app-title"/>
-            </HBox>
-
-            <!-- Connection row -->
-            <HBox styleClass="login-bar" alignment="CENTER_LEFT" spacing="8">
-                <padding><Insets top="8" right="16" bottom="8" left="16"/></padding>
-
-                <Label text="Host:" styleClass="field-label"/>
-                <TextField fx:id="hostField" promptText="localhost" prefWidth="130" styleClass="input-field"/>
-
-                <Label text="Port:" styleClass="field-label"/>
-                <TextField text="21" prefWidth="55" styleClass="port-field"/>
-
-                <Label text="User:" styleClass="field-label"/>
-                <TextField fx:id="userField" promptText="username" prefWidth="110" styleClass="input-field"/>
-
-                <Label text="Pass:" styleClass="field-label"/>
-                <PasswordField fx:id="passField" promptText="password" prefWidth="110" styleClass="input-field"/>
-
-                <Button fx:id="connectBtn" text="Connect" onAction="#handleConnect" styleClass="btn-primary"/>
-                <Button fx:id="disconnectBtn" text="Disconnect" onAction="#handleDisconnect"
-                        styleClass="btn-danger" disable="true"/>
-
-                <!-- Spacer -->
-                <Region HBox.hgrow="ALWAYS"/>
-
-                <Label fx:id="statusLabel" text="● Disconnected" styleClass="status-disconnected"/>
-            </HBox>
-
-            <!-- Action toolbar (enabled only when connected) -->
-            <ToolBar fx:id="actionToolbar" styleClass="action-toolbar" disable="true">
-                <padding><Insets top="4" right="12" bottom="4" left="12"/></padding>
-
-                <Button text="LIST" fx:id="lsBtn" onAction="#handleLs" />
-                <Button text="📁  New Folder" onAction="#handleMkdir"  styleClass="btn-tool"/>
-                <Button text="🗑  Remove Dir" onAction="#handleRmdir"  styleClass="btn-tool"/>
-                <Separator/>
-                <Button text="⬇  Download"  onAction="#handleGet"   styleClass="btn-tool"/>
-                <Button text="⬆  Upload"    onAction="#handlePut"   styleClass="btn-tool"/>
-                <Button text="✕  Delete"     onAction="#handleDel"   styleClass="btn-tool-danger"/>
-                <Separator/>
-                <Button text="📄  PWD"       onAction="#handlePwd"   styleClass="btn-tool"/>
-            </ToolBar>
-        </VBox>
-    </top>
-
-    <!-- ═══════════════════════  CENTER – Panels  ═══════════════════════ -->
-    <center>
-        <SplitPane dividerPositions="0.55" VBox.vgrow="ALWAYS">
-
-            <!-- LEFT – Remote file browser -->
-            <VBox styleClass="panel" SplitPane.resizableWithParent="true">
-                <!-- Path navigation row -->
-                <HBox styleClass="path-bar" alignment="CENTER_LEFT" spacing="6">
-                    <padding><Insets top="6" right="10" bottom="6" left="10"/></padding>
-                    <Label text="Remote path:" styleClass="field-label"/>
-                    <TextField fx:id="remotePathField" promptText="/  (type path + Enter to cd)"
-                               HBox.hgrow="ALWAYS" styleClass="path-field"
-                               onAction="#handleCd"/>
-                    <Button text="Go" onAction="#handleCd" styleClass="btn-go"/>
-                    <Button text="↑ Up" onAction="#handleCdUp" styleClass="btn-go"/>
+    <BorderPane>
+        <top>
+            <VBox styleClass="top-bar" spacing="0">
+                <HBox styleClass="title-strip" alignment="CENTER_LEFT" spacing="10">
+                    <padding><Insets top="10" right="16" bottom="10" left="16"/></padding>
+                    <Label text="FTP Client" styleClass="app-title"/>
                 </HBox>
 
-                <!-- File list -->
-                <ListView fx:id="remoteListView" VBox.vgrow="ALWAYS" styleClass="file-list"
-                          onMouseClicked="#handleRemoteDoubleClick"/>
-
-                <!-- Remote status bar -->
-                <HBox styleClass="panel-statusbar" alignment="CENTER_LEFT">
-                    <padding><Insets top="3" right="10" bottom="3" left="10"/></padding>
-                    <Label fx:id="remoteCountLabel" text="0 items" styleClass="statusbar-text"/>
-                </HBox>
-            </VBox>
-
-            <!-- RIGHT – Log / console -->
-            <VBox styleClass="panel" SplitPane.resizableWithParent="true">
-                <HBox styleClass="path-bar" alignment="CENTER_LEFT" spacing="6">
-                    <padding><Insets top="6" right="10" bottom="6" left="10"/></padding>
-                    <Label text="Session Log" styleClass="field-label"/>
+                <HBox styleClass="login-bar" alignment="CENTER_LEFT" spacing="8">
+                    <padding><Insets top="8" right="16" bottom="8" left="16"/></padding>
+                    <Label text="Host:" styleClass="field-label"/>
+                    <TextField fx:id="hostField" promptText="localhost" prefWidth="130" styleClass="input-field"/>
+                    <Label text="Port:" styleClass="field-label"/>
+                    <TextField text="21" prefWidth="55" styleClass="port-field"/>
+                    <Label text="User:" styleClass="field-label"/>
+                    <TextField fx:id="userField" promptText="username" prefWidth="110" styleClass="input-field"/>
+                    <Label text="Pass:" styleClass="field-label"/>
+                    <PasswordField fx:id="passField" promptText="password" prefWidth="110" styleClass="input-field"/>
+                    <Button fx:id="connectBtn" text="Connect" onAction="#handleConnect" styleClass="btn-primary"/>
+                    <Button fx:id="disconnectBtn" text="Disconnect" onAction="#handleDisconnect" styleClass="btn-danger" disable="true"/>
                     <Region HBox.hgrow="ALWAYS"/>
-                    <Button text="Clear" onAction="#handleClearLog" styleClass="btn-go"/>
+                    <Label fx:id="statusLabel" text="● Disconnected" styleClass="status-disconnected"/>
                 </HBox>
 
-                <TextArea fx:id="logArea" editable="false" wrapText="true"
-                          VBox.vgrow="ALWAYS" styleClass="log-area"/>
-
-                <!-- Manual command row -->
-                <HBox styleClass="path-bar" alignment="CENTER_LEFT" spacing="6">
-                    <padding><Insets top="6" right="10" bottom="6" left="10"/></padding>
-                    <Label text="Raw cmd:" styleClass="field-label"/>
-                    <TextField fx:id="rawCmdField" promptText="e.g. NOOP" HBox.hgrow="ALWAYS"
-                               styleClass="path-field" onAction="#handleRawCmd"/>
-                    <Button text="Send" onAction="#handleRawCmd" styleClass="btn-go"/>
-                </HBox>
+                <ToolBar fx:id="actionToolbar" styleClass="action-toolbar" disable="true">
+                    <padding><Insets top="4" right="12" bottom="4" left="12"/></padding>
+                    <Button text="LIST" fx:id="lsBtn" onAction="#handleLs" />
+                    
+                    <Button text="📁  New Folder" onAction="#showMkdirForm"  styleClass="btn-tool"/>
+                    
+                    <Button text="🗑  Remove Dir" onAction="#showRmdirForm"  styleClass="btn-tool"/>
+                    <Separator/>
+                    <Button text="⬇  Download"  onAction="#handleGet"   styleClass="btn-tool"/>
+                    <Button text="⬆  Upload"    onAction="#handlePut"   styleClass="btn-tool"/>
+                    <Button text="✕  Delete"     onAction="#handleDel"   styleClass="btn-tool-danger"/>
+                    <Separator/>
+                    <Button text="📄  PWD"       onAction="#handlePwd"   styleClass="btn-tool"/>
+                </ToolBar>
             </VBox>
+        </top>
 
-        </SplitPane>
-    </center>
+        <center>
+            <SplitPane dividerPositions="0.55" VBox.vgrow="ALWAYS">
+                <VBox styleClass="panel" SplitPane.resizableWithParent="true">
+                    <HBox styleClass="path-bar" alignment="CENTER_LEFT" spacing="6">
+                        <padding><Insets top="6" right="10" bottom="6" left="10"/></padding>
+                        <Label text="Remote path:" styleClass="field-label"/>
+                        <TextField fx:id="remotePathField" promptText="/  (type path + Enter to cd)"
+                                   HBox.hgrow="ALWAYS" styleClass="path-field" onAction="#handleCd"/>
+                        <Button text="Go" onAction="#handleCd" styleClass="btn-go"/>
+                        <Button text="↑ Up" onAction="#handleCdUp" styleClass="btn-go"/>
+                    </HBox>
+                    <ListView fx:id="remoteListView" VBox.vgrow="ALWAYS" styleClass="file-list" onMouseClicked="#handleRemoteDoubleClick"/>
+                    <HBox styleClass="panel-statusbar" alignment="CENTER_LEFT">
+                        <padding><Insets top="3" right="10" bottom="3" left="10"/></padding>
+                        <Label fx:id="remoteCountLabel" text="0 items" styleClass="statusbar-text"/>
+                    </HBox>
+                </VBox>
 
-    <!-- ═══════════════════════  BOTTOM – Status bar  ════════════════════ -->
-    <bottom>
-        <HBox styleClass="bottom-bar" alignment="CENTER_LEFT" spacing="12">
-            <padding><Insets top="5" right="16" bottom="5" left="16"/></padding>
-            <Label fx:id="bottomStatusLabel" text="Ready." styleClass="statusbar-text"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <ProgressIndicator fx:id="progressIndicator" prefWidth="18" prefHeight="18"
-                               visible="false" styleClass="progress-indicator"/>
-        </HBox>
-    </bottom>
+                <VBox styleClass="panel" SplitPane.resizableWithParent="true">
+                    <HBox styleClass="path-bar" alignment="CENTER_LEFT" spacing="6">
+                        <padding><Insets top="6" right="10" bottom="6" left="10"/></padding>
+                        <Label text="Session Log" styleClass="field-label"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="Clear" onAction="#handleClearLog" styleClass="btn-go"/>
+                    </HBox>
+                    <TextArea fx:id="logArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS" styleClass="log-area"/>
+                    <HBox styleClass="path-bar" alignment="CENTER_LEFT" spacing="6">
+                        <padding><Insets top="6" right="10" bottom="6" left="10"/></padding>
+                        <Label text="Raw cmd:" styleClass="field-label"/>
+                        <TextField fx:id="rawCmdField" promptText="e.g. NOOP" HBox.hgrow="ALWAYS" styleClass="path-field" onAction="#handleRawCmd"/>
+                        <Button text="Send" onAction="#handleRawCmd" styleClass="btn-go"/>
+                    </HBox>
+                </VBox>
+            </SplitPane>
+        </center>
 
-</BorderPane>
+        <bottom>
+            <HBox styleClass="bottom-bar" alignment="CENTER_LEFT" spacing="12">
+                <padding><Insets top="5" right="16" bottom="5" left="16"/></padding>
+                <Label fx:id="bottomStatusLabel" text="Ready." styleClass="statusbar-text"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <ProgressIndicator fx:id="progressIndicator" prefWidth="18" prefHeight="18" visible="false" styleClass="progress-indicator"/>
+            </HBox>
+        </bottom>
+    </BorderPane>
+
+    <StackPane fx:id="mkdirForm" visible="false" style="stack-pane-divider">
+        <VBox alignment="CENTER" spacing="15" maxWidth="300" maxHeight="140"
+              styleClass="vbox-mkdirForm-divider">
+            <Label text="Enter New Folder Name:" styleClas="label-mkdirForm-divider"/>
+            
+            <TextField fx:id="mkdirName" promptText="e.g. new_folder" onAction="#handleMkdir"/>
+            
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <Button text="Cancel" onAction="#hideMkdirForm" style="-fx-cursor: hand;"/>
+                <Button text="Save" onAction="#handleMkdir" styleClass="btn-saveMkdir"/>
+            </HBox>
+        </VBox>
+    </StackPane>
+
+    /* ── Rmdir Form ──────────────────────────────────────── */
+
+    <StackPane fx:id="rmdirForm" visible="false" styleClass="stackpane-form-divider">
+        <VBox alignment="CENTER" spacing="15" maxWidth="320" maxHeight="130"
+              styleClass="vbox-form-divider">
+            
+            <Label text="Are you sure you want to delete this directory?" 
+                   wrapText="true" textAlignment="CENTER" 
+                   style="label-form-divider"/>
+            
+            <HBox alignment="CENTER" spacing="15">
+                <Button text="Cancel" onAction="#hideRmdirDialog" style="-fx-cursor: hand;"/>
+                <Button text="Confirm" onAction="#handleRmdir" styleClass="btn-danger"/>
+            </HBox>
+        </VBox>
+    </StackPane>
+
+</StackPane>

@@ -67,6 +67,12 @@
     -fx-cursor: hand;
 }
 
+.btn-saveMkdir {
+    -fx-base: #28a745; 
+    -fx-text-fill: white; 
+    -fx-cursor: hand;
+}
+
 .btn-primary:hover   { -fx-background-color: #5592f0; }
 .btn-primary:pressed { -fx-background-color: #2a6ad4; }
 .btn-primary:disabled { -fx-opacity: 0.45; }
@@ -248,6 +254,22 @@
 .scroll-bar .decrement-button {
     -fx-background-color: transparent;
     -fx-padding: 0;
+}
+
+/* ── StackPane mkdirForm divider ───────────────────────────────────── */
+.stackpane-form-divider {
+    -fx-background-color: rgba(0, 0, 0, 0.4);
+}
+
+.vbox-form-divider {
+    -fx-background-color: white; 
+    -fx-padding: 20; -fx-background-radius: 8; 
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 5);
+}
+
+.label-form-divider {
+    -fx-font-size: 14px; 
+    -fx-font-weight: bold;
 }
 
 /* ── SplitPane divider ───────────────────────────────────── */
