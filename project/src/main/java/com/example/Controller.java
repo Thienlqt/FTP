@@ -125,4 +125,17 @@ public class Controller {
             remotePathField.clear();
         }
     }
+
+    @FXML 
+    public void handleLs() {
+        try {
+            ftpClient.ls();
+            log("Listed directories & files successfully!");
+            logger.info("Listed directories & files successfully!");
+        }
+        catch (Exception e) {
+            log("Error during listing directory & files: " + e.getMessage());
+            logger.error("Error during listing directory & files: " + e.getMessage());
+        }
+    }
 }
