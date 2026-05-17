@@ -212,10 +212,8 @@ public class Client {
             pasvWrite.flush();
             pasvWrite.close();
         } finally {
-            if (fileUpload != null)
-                fileUpload.close();
-            if (pasvSocket != null)
-                pasvSocket.close();
+            if (fileUpload != null) fileUpload.close();
+            if (pasvSocket != null) pasvSocket.close();
         }
         String response226 = readResponse();
         if (!response226.startsWith("226")) {

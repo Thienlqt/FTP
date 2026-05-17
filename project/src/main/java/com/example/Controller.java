@@ -2,19 +2,20 @@ package com.example;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.StackPane;
 
-import javax.swing.Action;
+import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,7 +31,7 @@ public class Controller {
     @FXML
     private TextField userField;
     @FXML
-    private TextField remotePathField; // show path for pwd cmd
+    private TextField remoteCurrentPathField; // show current path for pwd cmd
     @FXML
     private TextField rawCmdField; // show what cmds were used
     @FXML
@@ -73,6 +74,8 @@ public class Controller {
     @FXML
     public void initialize() {
         log("Welcome to FTP Client. Ready to connect.");
+
+        remoteListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
     // Bring log to the UI
@@ -81,7 +84,7 @@ public class Controller {
     }
 
     @FXML
-    public void handleConnect(ActionEvent event) {
+    public void handleConnect() {
         String host = hostField.getText().trim();
         String user = userField.getText().trim();
         String pass = passField.getText().trim();
@@ -123,7 +126,7 @@ public class Controller {
     }
 
     @FXML
-    public void handleDisconnect(ActionEvent event) {
+    public void handleDisconnect() {
         if (ftpClient != null) {
             try {
                 ftpClient.quit();
@@ -145,12 +148,12 @@ public class Controller {
 
             remoteListView.getItems().clear();
             remoteCountLabel.setText("0 items");
-            remotePathField.clear();
+            remoteCurrentPathField.clear();
         }
     }
 
     @FXML
-    public void handleLs(ActionEvent event) {
+    public void handleLs() {
         try {
             // have to convert the data structure of ls()
             // from ArrayList<String> to observableArrayList
@@ -167,7 +170,7 @@ public class Controller {
     /* ── Mkdir Form ─────────────────────────────────────────────── */
 
     @FXML
-    public void showMkdirForm(ActionEvent event) {
+    public void showMkdirForm() {
         try {
             mkdirName.clear();
             mkdirName.setText("New Directory");
@@ -183,7 +186,7 @@ public class Controller {
     }
 
     @FXML
-    public void hideMkdirForm(ActionEvent event) {
+    public void hideMkdirForm() {
         try {
             mkdirForm.setVisible(false);
             log("Closing the form successfully!");
@@ -195,7 +198,7 @@ public class Controller {
     }
 
     @FXML
-    public void handleMkdir(ActionEvent event) {
+    public void handleMkdir() {
         String dirName = mkdirName.getText().trim();
         if (dirName.isEmpty()) {
             log("Folder name cannot be empty!");
@@ -205,15 +208,111 @@ public class Controller {
         try {
             ftpClient.mkdir(dirName);
             log("Created directory '" + dirName + "' successfully!");
+            logger.info("Created directory '" + dirName + "' successfully!");
+
+            hideMkdirForm(); // close the form immediately after the dir was created
+            handleLs(); // refresh the list of files and folders to see the newly created dir
+
         } catch (Exception e) {
             log("Error during creating directory: " + e.getMessage());
             logger.error("Error during creating directory: " + e.getMessage());
         }
     }
-/* ── Rmdir Form ─────────────────────────────────────────────── */
+
+    /* ── Rmdir Form ─────────────────────────────────────────────── */
 
     @FXML
-    public void showRmdirForm(ActionEvent event) {
-        
+    public void showRmdirForm() {
+        try {
+            rmdirForm.setVisible(true);
+            log("Show the form successfully!");
+            logger.info("Show the form successfully!");
+        } catch (Exception e) {
+            log("Error during showing the form: " + e.getMessage());
+            logger.error("Error during showing the form: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void hideRmdirForm() {
+        try {
+            rmdirForm.setVisible(false);
+            log("Close the form successfully!");
+            logger.info("Close the form successfully!");
+        } catch (Exception e) {
+            log("Error during closing the form: " + e.getMessage());
+            logger.error("Error during closing the form: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private List<String> getSelectedItems() {
+        ObservableList<String> selectedItems = remoteListView.getSelectionModel().getSelectedItems();
+        List<String> fullpaths = new ArrayList<>();
+
+        if (selectedItems == null || selectedItems.isEmpty()) {
+            return fullpaths;
+        }
+
+        String currentPath = remoteCurrentPathField.getText().trim();
+        if (currentPath.isEmpty()) {
+            currentPath = "/";
+        }
+
+        for (String selectedItem : selectedItems) {
+            if (selectedItem != null || !selectedItem.trim().isEmpty()) {
+                String itemName = parseItem(selectedItem);
+
+                String fullpath;
+                if (currentPath.endsWith("/")) {
+                    fullpath = currentPath + itemName;
+                }
+                fullpath = currentPath + "/" + itemName;
+
+                fullpaths.add(fullpath);
+            }
+        }
+        return fullpaths;
+    }
+
+    @FXML
+    private String parseItem(String item) {
+        if (item == null || item.trim().isEmpty()) {
+            return "";
+        }
+
+        // Check if it's UNIX style (starts with permissions like drwxr-xr-x or
+        // -rw-r--r--)
+        if (item.matches("^[bcdlps-][rwx-]{9}.*")) {
+            String[] parts = item.split("\\s+", 9);
+            if (parts.length == 9) {
+                return parts[8]; // 9th element contains the name (preserves spaces)
+            }
+        }
+
+        // Check if it's Windows/MS-DOS style (Date first)
+        else if (item.matches("^\\d{2}-\\d{2}-\\d{2,4}.*")) {
+            String[] parts = item.split("\\s+", 4);
+            if (parts.length == 4) {
+                return parts[3]; // 4th element contains the name (preserves spaces)
+            }
+        }
+
+        // 3. Fallback: If we cannot identify the format, split by space and take the
+        // very last word
+        // Note: This fallback might chop off parts of a name if it contains spaces,
+        // but it prevents the app from crashing on unknown server formats.
+        String[] parts = item.split("\\s+");
+        return parts[parts.length - 1];
+    }
+
+    @FXML
+    public void handleRmdirForm() {
+        try {
+
+        } catch (Exception e) {
+            log("Error during removing the directory: " + e.getMessage());
+            logger.error("Error during removing the directory: " + e.getMessage());
+        }
     }
 }

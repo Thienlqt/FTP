@@ -122,7 +122,7 @@
                    style="label-form-divider"/>
             
             <HBox alignment="CENTER" spacing="15">
-                <Button text="Cancel" onAction="#hideRmdirDialog" style="-fx-cursor: hand;"/>
+                <Button text="Cancel" onAction="#hideRmdirForm" style="-fx-cursor: hand;"/>
                 <Button text="Confirm" onAction="#handleRmdir" styleClass="btn-danger"/>
             </HBox>
         </VBox>
