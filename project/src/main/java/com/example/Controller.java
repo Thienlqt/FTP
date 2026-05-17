@@ -307,7 +307,7 @@ public class Controller {
     }
 
     @FXML
-    public void handleRmdirForm() {
+    public void handleRmdir() {
         try {
 
         } catch (Exception e) {
