@@ -241,7 +241,7 @@ public class Client {
         }
     }
 
-    public void rmdir(String dir) throws IOException {
+    public void rmdir(List<String> dir) throws IOException {
         out.write("RMD " + dir + "\r\n");
         out.flush();
         String response = readResponse();

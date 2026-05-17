@@ -83,6 +83,8 @@ public class Controller {
         Platform.runLater(() -> logArea.appendText(message + "\r\n"));
     }
 
+    /* ── connect() ─────────────────────────────────────────────── */
+
     @FXML
     public void handleConnect() {
         String host = hostField.getText().trim();
@@ -125,6 +127,8 @@ public class Controller {
         }
     }
 
+    /* ── quit() ─────────────────────────────────────────────── */
+
     @FXML
     public void handleDisconnect() {
         if (ftpClient != null) {
@@ -152,98 +156,7 @@ public class Controller {
         }
     }
 
-    @FXML
-    public void handleLs() {
-        try {
-            // have to convert the data structure of ls()
-            // from ArrayList<String> to observableArrayList
-            // in order to be able to display to the field remoteListView in UI.
-            remoteListView.setItems(FXCollections.observableArrayList(ftpClient.ls()));
-            log("Listed directories & files successfully!");
-            logger.info("Listed directories & files successfully!");
-        } catch (Exception e) {
-            log("Error during listing directory & files: " + e.getMessage());
-            logger.error("Error during listing directory & files: " + e.getMessage());
-        }
-    }
-
-    /* ── Mkdir Form ─────────────────────────────────────────────── */
-
-    @FXML
-    public void showMkdirForm() {
-        try {
-            mkdirName.clear();
-            mkdirName.setText("New Directory");
-            mkdirForm.setVisible(true);
-            mkdirForm.requestFocus(); // bring the cursor to inside the textfield
-            mkdirName.selectAll(); // cover all the content of the textfield, easy to overwrite
-            log("show the form successfully!");
-            logger.info("show the form successfully!");
-        } catch (Exception e) {
-            log("Error during showing the form: " + e.getMessage());
-            logger.error("Error during showing the form: " + e.getMessage());
-        }
-    }
-
-    @FXML
-    public void hideMkdirForm() {
-        try {
-            mkdirForm.setVisible(false);
-            log("Closing the form successfully!");
-            logger.info("Closing the form successfully!");
-        } catch (Exception e) {
-            log("Error during closing the form: " + e.getMessage());
-            logger.error("Error during closing the form: " + e.getMessage());
-        }
-    }
-
-    @FXML
-    public void handleMkdir() {
-        String dirName = mkdirName.getText().trim();
-        if (dirName.isEmpty()) {
-            log("Folder name cannot be empty!");
-            logger.error("Folder name cannot be empty!");
-            return;
-        }
-        try {
-            ftpClient.mkdir(dirName);
-            log("Created directory '" + dirName + "' successfully!");
-            logger.info("Created directory '" + dirName + "' successfully!");
-
-            hideMkdirForm(); // close the form immediately after the dir was created
-            handleLs(); // refresh the list of files and folders to see the newly created dir
-
-        } catch (Exception e) {
-            log("Error during creating directory: " + e.getMessage());
-            logger.error("Error during creating directory: " + e.getMessage());
-        }
-    }
-
-    /* ── Rmdir Form ─────────────────────────────────────────────── */
-
-    @FXML
-    public void showRmdirForm() {
-        try {
-            rmdirForm.setVisible(true);
-            log("Show the form successfully!");
-            logger.info("Show the form successfully!");
-        } catch (Exception e) {
-            log("Error during showing the form: " + e.getMessage());
-            logger.error("Error during showing the form: " + e.getMessage());
-        }
-    }
-
-    @FXML
-    public void hideRmdirForm() {
-        try {
-            rmdirForm.setVisible(false);
-            log("Close the form successfully!");
-            logger.info("Close the form successfully!");
-        } catch (Exception e) {
-            log("Error during closing the form: " + e.getMessage());
-            logger.error("Error during closing the form: " + e.getMessage());
-        }
-    }
+        /* ── Helper to get multiple items from ls() ─────────────────────────────────────────────── */
 
     @FXML
     private List<String> getSelectedItems() {
@@ -306,10 +219,111 @@ public class Controller {
         return parts[parts.length - 1];
     }
 
+    /* ── ls() ─────────────────────────────────────────────── */
+
+    @FXML
+    public void handleLs() {
+        try {
+            // have to convert the data structure of ls()
+            // from ArrayList<String> to observableArrayList
+            // in order to be able to display to the field remoteListView in UI.
+            remoteListView.setItems(FXCollections.observableArrayList(ftpClient.ls()));
+            log("Listed directories & files successfully!");
+            logger.info("Listed directories & files successfully!");
+        } catch (Exception e) {
+            log("Error during listing directory & files: " + e.getMessage());
+            logger.error("Error during listing directory & files: " + e.getMessage());
+        }
+    }
+
+    /* ── Mkdir Form ─────────────────────────────────────────────── */
+
+    @FXML
+    public void showMkdirForm() {
+        try {
+            mkdirName.clear();
+            mkdirName.setText("New Directory");
+            mkdirForm.setVisible(true);
+            mkdirForm.requestFocus(); // bring the cursor to inside the textfield
+            mkdirName.selectAll(); // cover all the content of the textfield, easy to overwrite
+            log("show the form successfully!");
+            logger.info("show the form successfully!");
+        } catch (Exception e) {
+            log("Error during showing the form: " + e.getMessage());
+            logger.error("Error during showing the form: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void hideMkdirForm() {
+        try {
+            mkdirForm.setVisible(false);
+            log("Closing the form successfully!");
+            logger.info("Closing the form successfully!");
+        } catch (Exception e) {
+            log("Error during closing the form: " + e.getMessage());
+            logger.error("Error during closing the form: " + e.getMessage());
+        }
+    }
+
+    /* ── mkdir ─────────────────────────────────────────────── */
+
+    @FXML
+    public void handleMkdir() {
+        String dirName = mkdirName.getText().trim();
+        if (dirName.isEmpty()) {
+            log("Folder name cannot be empty!");
+            logger.error("Folder name cannot be empty!");
+            return;
+        }
+        try {
+            ftpClient.mkdir(dirName);
+            log("Created directory '" + dirName + "' successfully!");
+            logger.info("Created directory '" + dirName + "' successfully!");
+
+            hideMkdirForm(); // close the form immediately after the dir was created
+            handleLs(); // refresh the list of files and folders to see the newly created dir
+
+        } catch (Exception e) {
+            log("Error during creating directory: " + e.getMessage());
+            logger.error("Error during creating directory: " + e.getMessage());
+        }
+    }
+
+    /* ── Rmdir Form ─────────────────────────────────────────────── */
+
+    @FXML
+    public void showRmdirForm() {
+        try {
+            rmdirForm.setVisible(true);
+            log("Show the form successfully!");
+            logger.info("Show the form successfully!");
+        } catch (Exception e) {
+            log("Error during showing the form: " + e.getMessage());
+            logger.error("Error during showing the form: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void hideRmdirForm() {
+        try {
+            rmdirForm.setVisible(false);
+            log("Close the form successfully!");
+            logger.info("Close the form successfully!");
+        } catch (Exception e) {
+            log("Error during closing the form: " + e.getMessage());
+            logger.error("Error during closing the form: " + e.getMessage());
+        }
+    }
+
+    /* ── Rmdir ─────────────────────────────────────────────── */
+
     @FXML
     public void handleRmdir() {
         try {
-
+            ftpClient.rmdir(getSelectedItems());
+            log("Directory removed successfully!");
+            logger.info("Directory removed successfully!");
         } catch (Exception e) {
             log("Error during removing the directory: " + e.getMessage());
             logger.error("Error during removing the directory: " + e.getMessage());
