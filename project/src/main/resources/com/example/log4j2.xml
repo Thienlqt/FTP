@@ -20,7 +20,7 @@
 
     <Loggers>
         <!-- Package-specific logger -->
-        <Logger name="com.myapp" level="DEBUG" additivity="false">
+        <Logger name="com.example" level="DEBUG" additivity="false">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="RollingFile"/>
         </Logger>

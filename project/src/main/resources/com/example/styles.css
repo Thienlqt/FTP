@@ -32,6 +32,16 @@
     -fx-font-size: 12px;
 }
 
+.port-field {
+    -fx-background-color: #2d3139;
+    -fx-text-fill: #e8eaed;
+    -fx-prompt-text-fill: #5c6370;
+    -fx-border-color: #444c56;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 4 8 4 8;
+}
+
 .input-field {
     -fx-background-color: #2d3139;
     -fx-text-fill: #e8eaed;
