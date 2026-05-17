@@ -221,8 +221,8 @@ public class Client {
         }
     }
 
-    public void del(String filename) throws IOException {
-        out.write("DELE " + filename + "\r\n");
+    public void del(List<String> filenames) throws IOException {
+        out.write("DELE " + filenames + "\r\n");
         out.flush();
         String response = readResponse();
 

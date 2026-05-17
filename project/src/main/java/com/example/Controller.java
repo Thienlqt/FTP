@@ -39,6 +39,10 @@ public class Controller {
 
     @FXML
     private TextArea logArea;
+    @FXML
+    private TextArea dirsToDelete;
+    @FXML
+    private TextArea filesToDelete;
 
     @FXML
     private PasswordField passField; // hide the password
@@ -70,6 +74,8 @@ public class Controller {
     private StackPane mkdirForm; // pop-up form for the creating dir
     @FXML
     private StackPane rmdirForm; // pop-up form for removing dir
+    @FXML
+    private StackPane delForm;
 
     @FXML
     public void initialize() {
@@ -173,18 +179,20 @@ public class Controller {
         }
 
         for (String selectedItem : selectedItems) {
-            if (selectedItem != null || !selectedItem.trim().isEmpty()) {
+            if (selectedItem != null && !selectedItem.trim().isEmpty()) {
                 String itemName = parseItem(selectedItem);
-
+                
                 String fullpath;
                 if (currentPath.endsWith("/")) {
                     fullpath = currentPath + itemName;
                 }
-                fullpath = currentPath + "/" + itemName;
-
+                else {
+                    fullpath = currentPath + "/" + itemName;
+                }
                 fullpaths.add(fullpath);
             }
         }
+
         return fullpaths;
     }
 
@@ -294,7 +302,9 @@ public class Controller {
 
     @FXML
     public void showRmdirForm() {
+        List<String> contentsToDelete = getSelectedItems();
         try {
+            dirsToDelete.setText(String.join("\n", contentsToDelete));
             rmdirForm.setVisible(true);
             log("Show the form successfully!");
             logger.info("Show the form successfully!");
@@ -327,6 +337,34 @@ public class Controller {
         } catch (Exception e) {
             log("Error during removing the directory: " + e.getMessage());
             logger.error("Error during removing the directory: " + e.getMessage());
+        }
+    }
+
+    /* ── Del Form ─────────────────────────────────────────────── */
+
+    @FXML
+    public void showDelForm() {
+        List<String> contentsToDelete = getSelectedItems();
+        try {
+            filesToDelete.setText(String.join("\n", contentsToDelete));
+            delForm.setVisible(true);
+            log("Show the form successfully!");
+            logger.info("Show the form successfully!");
+        } catch (Exception e) {
+            log("Error during showing the form: " + e.getMessage());
+            logger.error("Error during showing the form: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void hideDelForm() {
+        try {
+            delForm.setVisible(false);
+            log("Close the form successfully!");
+            logger.info("Close the form successfully!");
+        } catch (Exception e) {
+            log("Error during closing the form: " + e.getMessage());
+            logger.error("Error during closing the form: " + e.getMessage());
         }
     }
 }
