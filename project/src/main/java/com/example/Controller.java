@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 
@@ -22,23 +23,24 @@ public class Controller {
 
     @FXML private TextField hostField;
     @FXML private TextField userField;
-    @FXML private TextField remotePathField;
-    @FXML private TextField logArea;
-    @FXML private TextField rawCmdField;
+    @FXML private TextField remotePathField; // show path for pwd cmd
+    @FXML private TextField rawCmdField; // show what cmds were used
 
-    @FXML private PasswordField passField;
+    @FXML private TextArea logArea;
+
+    @FXML private PasswordField passField; // hide the password
 
     @FXML private Button lsBtn;
     @FXML private Button connectBtn;
     @FXML private Button disconnectBtn;
 
-    @FXML private Label statusLabel;
-    @FXML private Label remoteCountLabel;
+    @FXML private Label statusLabel; // connected / disconnected ?
+    @FXML private Label remoteCountLabel; // count the number of files on the connected server
     @FXML private Label bottomStatusLabel;
 
-    @FXML private ToolBar actionToolbar;
+    @FXML private ToolBar actionToolbar; // all cmds are managed here
     
-    @FXML private ListView<String> remoteListView;
+    @FXML private ListView<String> remoteListView; // file list from "ls" command
     
     @FXML private ProgressIndicator progressIndicator;
 
@@ -73,6 +75,18 @@ public class Controller {
             ftpClient.login(user, pass);
             log("Log in with " + user);
             logger.info("Log in with " + user);
+
+            statusLabel.setText("● Connected");
+            statusLabel.getStyleClass().remove("status-disconnected");
+            statusLabel.getStyleClass().add("status-connected");
+            bottomStatusLabel.setText("Connected to " + host);
+
+            actionToolbar.setDisable(false);
+            connectBtn.setDisable(true);
+            disconnectBtn.setDisable(false);
+
+            log("Connected successfully!");
+            logger.info("Connected successfully");
         }
         catch (NumberFormatException e) {
             log("Port must be a valid number: " + e.getMessage());
@@ -81,6 +95,34 @@ public class Controller {
         catch (Exception e) {
             log("Connection error: " + e.getMessage());
             logger.error("Connection error: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void handleDisconnect(ActionEvent event) {
+        if (ftpClient != null) {
+            try {
+                ftpClient.quit();
+                log("Disconnect from server.");
+                logger.info("Disconnect from server.");
+            }
+            catch (Exception e) {
+                log("Error during disconnection: " + e.getMessage());
+                logger.error("Error during disconnection: " + e.getMessage());
+            }
+
+            statusLabel.setText("● Disconnected");
+            statusLabel.getStyleClass().remove("status-connected");
+            statusLabel.getStyleClass().add("status-disconnected");
+            bottomStatusLabel.setText("Ready");
+
+            actionToolbar.setDisable(true);
+            connectBtn.setDisable(false);
+            disconnectBtn.setDisable(true);
+
+            remoteListView.getItems().clear();
+            remoteCountLabel.setText("0 items");
+            remotePathField.clear();
         }
     }
 }

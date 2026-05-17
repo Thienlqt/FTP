@@ -28,7 +28,7 @@
                 <TextField fx:id="hostField" promptText="localhost" prefWidth="130" styleClass="input-field"/>
 
                 <Label text="Port:" styleClass="field-label"/>
-                <TextField fx:id="portField" promptText="21" prefWidth="55" styleClass="port-field"/>
+                <TextField text="21" prefWidth="55" styleClass="port-field"/>
 
                 <Label text="User:" styleClass="field-label"/>
                 <TextField fx:id="userField" promptText="username" prefWidth="110" styleClass="input-field"/>
