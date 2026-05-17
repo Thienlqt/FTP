@@ -1,6 +1,7 @@
 package com.example;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -25,6 +26,7 @@ public class Controller {
     @FXML private TextField userField;
     @FXML private TextField remotePathField; // show path for pwd cmd
     @FXML private TextField rawCmdField; // show what cmds were used
+    @FXML private TextField mkdirName; // name the dir to create
 
     @FXML private TextArea logArea;
 
@@ -129,13 +131,28 @@ public class Controller {
     @FXML 
     public void handleLs() {
         try {
-            ftpClient.ls();
+            // have to convert the data structure of ls() 
+            // from ArrayList<String> to observableArrayList
+            // in order to be able to display to the field remoteListView in UI.
+            remoteListView.setItems(FXCollections.observableArrayList(ftpClient.ls()));
             log("Listed directories & files successfully!");
             logger.info("Listed directories & files successfully!");
         }
         catch (Exception e) {
             log("Error during listing directory & files: " + e.getMessage());
             logger.error("Error during listing directory & files: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void handleMkdir() {
+        try {
+            // 1. create pop up form in fxml
+            // 2. create mkdirFieldName
+            ftpClient.mkdir(mkdirName.getText());
+        } catch (Exception e) {
+            log("Error during creating directory: " + e.getMessage());
+            logger.error("Error during creating directory: " + e.getMessage());
         }
     }
 }
