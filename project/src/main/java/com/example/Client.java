@@ -181,7 +181,7 @@ public class Client {
     }
 
     // PASV + PUT
-    public void put(String filename) throws IOException {
+    public void put(String localfile, String remoteFile) throws IOException {
         // switch to binary mode
         out.write("TYPE I" + "\r\n");
         out.flush();
@@ -193,7 +193,7 @@ public class Client {
         FileInputStream fileUpload = null;
 
         try {
-            out.write("STOR " + filename + "\r\n");
+            out.write("STOR " + remoteFile + "\r\n");
             out.flush();
             String response150 = readResponse();
             if (!response150.startsWith("150")) {
@@ -202,7 +202,7 @@ public class Client {
 
             // set up to write the data from the file you want to upload.
             OutputStream pasvWrite = pasvSocket.getOutputStream();
-            fileUpload = new FileInputStream(filename);
+            fileUpload = new FileInputStream(localfile);
             int readLength; // length of the chunk of the data from the file
             byte[] data = new byte[1500];
 

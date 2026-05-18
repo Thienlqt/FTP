@@ -16,6 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
 import java.io.File;
@@ -407,7 +408,7 @@ public class Controller {
     }
 
     @FXML
-    public void showDownloadForm() {
+    public void handleGet() {
         List<String> contentsToDownload = getChosenItems();
         try {
             DirectoryChooser dirChooser = new DirectoryChooser();
@@ -434,11 +435,49 @@ public class Controller {
             }
             else {
                 log("Download cancelled by user.");
+                logger.info("Download cancelled by user.");
             }
         }
         catch (Exception e) {
-            log("Error during showing the form: " + e.getMessage());
-            logger.error("Error during showing the form: " + e.getMessage());
+            log("Error during download: " + e.getMessage());
+            logger.error("Error during download: " + e.getMessage());
+        }
+    }
+
+    // 1. Click button Upload
+    // 2. Pop up the window for choosing file to upload
+    // 3. Choose file to upload
+    // 4. The uploaded file will be uploaded to the current directory getting from pwd.
+    @FXML
+    public void handlePut() {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Select Files To Upload");
+
+            Window stage = actionToolbar.getScene().getWindow();
+            List<File> selectedFiles = fileChooser.showOpenMultipleDialog(stage);
+
+            if (selectedFiles != null && !selectedFiles.isEmpty()) {
+                for (File fileToUpload : selectedFiles) {
+                    String localFilename = fileToUpload.getAbsolutePath();
+
+                    String remoteFilename = fileToUpload.getName();
+
+                    ftpClient.put(localFilename, remoteFilename);
+
+                    log("Uploaded: " + localFilename);
+                    logger.info("Uploaded: " + localFilename + "->");
+                }
+                log("All selected files uploaded successfully!");
+            }
+            else {
+                log("Upload cancelled by user.");
+                logger.info("Upload cancelled by user.");
+            }
+        }
+        catch (Exception e) {
+            log("Error during upload: " + e.getMessage());
+            logger.error("Error during upload: " + e.getMessage());
         }
     }
 }
