@@ -15,7 +15,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.StackPane;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Window;
 
+import java.io.File;
 import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
@@ -58,6 +61,8 @@ public class Controller {
     private Button rmdirBtn;
     @FXML
     private Button delBtn;
+    @FXML
+    private Button downBtn;
 
     @FXML
     private Label statusLabel; // connected / disconnected ?
@@ -93,6 +98,10 @@ public class Controller {
         );
 
         delBtn.disableProperty().bind(
+            Bindings.isEmpty(remoteListView.getSelectionModel().getSelectedItems())
+        );
+
+        downBtn.disableProperty().bind(
             Bindings.isEmpty(remoteListView.getSelectionModel().getSelectedItems())
         );
     }
@@ -401,7 +410,31 @@ public class Controller {
     public void showDownloadForm() {
         List<String> contentsToDownload = getChosenItems();
         try {
-            //...
+            DirectoryChooser dirChooser = new DirectoryChooser();
+            dirChooser.setTitle("Select Destination Folder to Save Files");
+
+            Window stage = actionToolbar.getScene().getWindow();
+            File selectedDir = dirChooser.showDialog(stage);
+
+            if (selectedDir != null) {
+                String chosenDirPath = selectedDir.getAbsolutePath();
+
+                for (String fileToDownload : contentsToDownload) {
+                    String remoteFilename = new File(fileToDownload).getAbsolutePath();
+
+                    File localSaveFile = new File(selectedDir, remoteFilename);
+                    String localSavePath = localSaveFile.getAbsolutePath();
+
+                    ftpClient.get(remoteFilename, localSavePath);
+
+                    log("Downloaded: " + remoteFilename + " -> " + chosenDirPath);
+                    logger.info("Downloaded: " + fileToDownload + " -> " + localSavePath);
+                }
+                log("All selected files downloaded successfully!");
+            }
+            else {
+                log("Download cancelled by user.");
+            }
         }
         catch (Exception e) {
             log("Error during showing the form: " + e.getMessage());

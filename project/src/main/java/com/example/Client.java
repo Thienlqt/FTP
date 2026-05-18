@@ -136,7 +136,7 @@ public class Client {
     }
 
     // PASV + GET
-    public void get(String filename) throws IOException {
+    public void get(String filename, String localfile) throws IOException {
         // switch to binary mode
         out.write("TYPE I" + "\r\n");
         out.flush();
@@ -159,7 +159,7 @@ public class Client {
 
             // set up to read the content from the file want to download
             InputStream pasvReader = pasvSocket.getInputStream();
-            fileDownload = new FileOutputStream(filename); // empty file to write data from the file want to download
+            fileDownload = new FileOutputStream(localfile); // empty file to write data from the file want to download
             int readLength; // length of the chunk of data from the file
             byte[] data = new byte[1500]; // allocate a space to store the chunk of data
 

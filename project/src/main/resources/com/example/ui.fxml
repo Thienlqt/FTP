@@ -44,7 +44,7 @@
                     
                     <Button fx:id="rmdirBtn" text="🗑  Remove Dir" onAction="#showRmdirForm"  styleClass="btn-tool"/>
                     <Separator/>
-                    <Button text="⬇  Download"  onAction="#handleGet"   styleClass="btn-tool"/>
+                    <Button fx:id = "downBtn" text="⬇  Download"  onAction="#handleGet"   styleClass="btn-tool"/>
                     <Button text="⬆  Upload"    onAction="#handlePut"   styleClass="btn-tool"/>
                     <Button fx:id="delBtn" text="✕  Delete"     onAction="#showDelForm"   styleClass="btn-tool-danger"/>
                     <Separator/>
