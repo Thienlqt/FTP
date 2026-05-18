@@ -99,12 +99,14 @@
         </bottom>
     </BorderPane>
 
+    /* ── Mkdir Form ──────────────────────────────────────── */
+
     <StackPane fx:id="mkdirForm" visible="false" style="stack-pane-divider">
         <VBox alignment="CENTER" spacing="15" maxWidth="300" maxHeight="140"
               styleClass="vbox-mkdirForm-divider">
             <Label text="Enter New Folder Name:" styleClas="label-mkdirForm-divider"/>
             
-            <TextField fx:id="mkdirName" promptText="e.g. new_folder" onAction="#handleMkdir"/>
+            <TextField fx:id="mkdirName" promptText="e.g. New_Folder" onAction="#handleMkdir"/>
             
             <HBox alignment="CENTER_RIGHT" spacing="10">
                 <Button text="Cancel" onAction="#hideMkdirForm" style="-fx-cursor: hand;"/>

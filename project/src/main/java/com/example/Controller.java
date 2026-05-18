@@ -80,7 +80,7 @@ public class Controller {
     @FXML
     private StackPane rmdirForm; // pop-up form for removing dir
     @FXML
-    private StackPane delForm;
+    private StackPane delForm; // pop-up form for deleting files
 
     @FXML
     public void initialize() {
@@ -263,7 +263,7 @@ public class Controller {
     public void showMkdirForm() {
         try {
             mkdirName.clear();
-            mkdirName.setText("New Directory");
+            mkdirName.setText("New_Directory");
             mkdirForm.setVisible(true);
             mkdirForm.requestFocus(); // bring the cursor to inside the textfield
             mkdirName.selectAll(); // cover all the content of the textfield, easy to overwrite
@@ -390,6 +390,18 @@ public class Controller {
         } catch (Exception e) {
             log("Error during deleting files: " + e.getMessage());
             logger.error("Error during deleting files: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void showDownloadForm() {
+        List<String> contentsToDownload = getChosenItems();
+        try {
+            filesToDownload.setText(String.join(null, contentsToDownload));
+        }
+        catch (Exception e) {
+            log("Error during showing the form: " + e.getMessage());
+            logger.error("Error during showing the form: " + e.getMessage());
         }
     }
 }
