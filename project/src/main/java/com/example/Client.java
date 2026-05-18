@@ -221,8 +221,8 @@ public class Client {
         }
     }
 
-    public void del(List<String> filenames) throws IOException {
-        out.write("DELE " + filenames + "\r\n");
+    public void del(String filename) throws IOException {
+        out.write("DELE " + filename + "\r\n");
         out.flush();
         String response = readResponse();
 
@@ -241,7 +241,7 @@ public class Client {
         }
     }
 
-    public void rmdir(List<String> dir) throws IOException {
+    public void rmdir(String dir) throws IOException {
         out.write("RMD " + dir + "\r\n");
         out.flush();
         String response = readResponse();

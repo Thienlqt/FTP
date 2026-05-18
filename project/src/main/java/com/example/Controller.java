@@ -175,11 +175,11 @@ public class Controller {
         }
     }
 
-        /* ── Helper to get multiple items from ls() ─────────────────────────────────────────────── */
+    /* ── Helper to get multiple items from ls() ─────────────────────────────────────────────── */
 
+    ObservableList<String> selectedItems = remoteListView.getSelectionModel().getSelectedItems();
     @FXML
     private List<String> getChosenItems() {
-        ObservableList<String> selectedItems = remoteListView.getSelectionModel().getSelectedItems();
         List<String> fullpaths = new ArrayList<>();
 
         if (selectedItems == null || selectedItems.isEmpty()) {
@@ -344,7 +344,9 @@ public class Controller {
     @FXML
     public void handleRmdir() {
         try {
-            ftpClient.rmdir(getChosenItems());
+            for (String selectedItem : selectedItems) {
+                ftpClient.rmdir(selectedItem);
+            }
             log("Directory removed successfully!");
             logger.info("Directory removed successfully!");
         } catch (Exception e) {
@@ -384,7 +386,9 @@ public class Controller {
     @FXML
     public void handleDel() {
         try {
-            ftpClient.del(getChosenItems());
+            for (String selectedItem : selectedItems) {
+                ftpClient.del(selectedItem);
+            }
             log("Files deleted successfully!");
             logger.info("Files deleted successfully");
         } catch (Exception e) {
@@ -397,7 +401,7 @@ public class Controller {
     public void showDownloadForm() {
         List<String> contentsToDownload = getChosenItems();
         try {
-            filesToDownload.setText(String.join(null, contentsToDownload));
+            //...
         }
         catch (Exception e) {
             log("Error during showing the form: " + e.getMessage());
