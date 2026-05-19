@@ -468,7 +468,11 @@ public class Controller {
                     log("Uploaded: " + localFilename);
                     logger.info("Uploaded: " + localFilename + "->");
                 }
+
                 log("All selected files uploaded successfully!");
+                logger.info("All selected files uploaded successfully!");
+
+                handleLs();
             }
             else {
                 log("Upload cancelled by user.");
@@ -478,6 +482,17 @@ public class Controller {
         catch (Exception e) {
             log("Error during upload: " + e.getMessage());
             logger.error("Error during upload: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void handlePwd() {
+        try {
+            remoteCurrentPathField.setText(ftpClient.pwd());
+        }
+        catch (Exception e) {
+            log("Error during priting working directory: " + e.getMessage());
+            logger.error("Error during printing working directory: " + e.getMessage());
         }
     }
 }
