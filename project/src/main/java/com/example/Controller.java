@@ -486,6 +486,14 @@ public class Controller {
     }
 
     @FXML
+    public void handleCd() {
+        // 1. os.walk and filter all the dirs to walkthrough all the available directory from the root.
+        // 2. store in a List<String> to display on UI.
+        // 3. User clicks the directory name on the list.
+        // 4. Capture the selection and parse the text to the cmd cd.
+    }
+
+    @FXML
     public void handlePwd() {
         try {
             remoteCurrentPathField.setText(ftpClient.pwd());
