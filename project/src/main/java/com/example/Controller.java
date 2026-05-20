@@ -40,8 +40,6 @@ public class Controller {
     @FXML
     private TextField remoteCurrentPathField; // show current path for pwd cmd
     @FXML
-    private TextField rawCmdField; // show what cmds were used
-    @FXML
     private TextField mkdirName; // name the dir to create
 
     @FXML
@@ -172,6 +170,7 @@ public class Controller {
             statusLabel.getStyleClass().remove("status-disconnected");
             statusLabel.getStyleClass().add("status-connected");
             bottomStatusLabel.setText("Connected to " + host);
+            handleLs();
 
             actionToolbar.setDisable(false);
             connectBtn.setDisable(true);
