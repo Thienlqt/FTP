@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
@@ -14,6 +15,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -89,22 +91,40 @@ public class Controller {
     private StackPane delForm; // pop-up form for deleting files
 
     @FXML
+    private HBox breadcrumbBar;
+
+    @FXML
     public void initialize() {
         log("Welcome to FTP Client. Ready to connect.");
 
         remoteListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         rmdirBtn.disableProperty().bind(
-            Bindings.isEmpty(remoteListView.getSelectionModel().getSelectedItems())
-        );
+                Bindings.isEmpty(remoteListView.getSelectionModel().getSelectedItems()));
 
         delBtn.disableProperty().bind(
-            Bindings.isEmpty(remoteListView.getSelectionModel().getSelectedItems())
-        );
+                Bindings.isEmpty(remoteListView.getSelectionModel().getSelectedItems()));
 
         downBtn.disableProperty().bind(
-            Bindings.isEmpty(remoteListView.getSelectionModel().getSelectedItems())
-        );
+                Bindings.isEmpty(remoteListView.getSelectionModel().getSelectedItems()));
+    
+        remoteListView.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                String rawSelected = remoteListView.getSelectionModel().getSelectedItem();
+                if (rawSelected != null) {
+                    if (rawSelected.startsWith("d")) {
+                        String folderName = parseItem(rawSelected);
+                        String currentPath = remoteCurrentPathField.getText().trim();
+                        String absolutePath = buildFullPath(currentPath, rawSelected);
+
+                        navigateToAbsolutePath(absolutePath);
+                    }
+                    else {
+                        log("Selected item is not a dir!");
+                    }
+                }
+            }
+        });
     }
 
     // Bring log to the UI
@@ -185,9 +205,13 @@ public class Controller {
         }
     }
 
-    /* ── Helper to get multiple items from ls() ─────────────────────────────────────────────── */
+    /*
+     * ── Helper to get multiple items from ls()
+     * ───────────────────────────────────────────────
+     */
 
     ObservableList<String> selectedItems = remoteListView.getSelectionModel().getSelectedItems();
+
     @FXML
     private List<String> getChosenItems() {
         List<String> fullpaths = new ArrayList<>();
@@ -197,25 +221,16 @@ public class Controller {
         }
 
         String currentPath = remoteCurrentPathField.getText().trim();
-        if (currentPath.isEmpty()) {
-            currentPath = "/";
-        }
 
         for (String selectedItem : selectedItems) {
             if (selectedItem != null && !selectedItem.trim().isEmpty()) {
                 String itemName = parseItem(selectedItem);
-                
-                String fullpath;
-                if (currentPath.endsWith("/")) {
-                    fullpath = currentPath + itemName;
-                }
-                else {
-                    fullpath = currentPath + "/" + itemName;
-                }
+
+                String fullpath = buildFullPath(currentPath, itemName);
+
                 fullpaths.add(fullpath);
             }
         }
-
         return fullpaths;
     }
 
@@ -248,6 +263,21 @@ public class Controller {
         // but it prevents the app from crashing on unknown server formats.
         String[] parts = item.split("\\s+");
         return parts[parts.length - 1];
+    }
+
+    private String buildFullPath(String currentPath, String targetItemName) {
+        if (currentPath.isEmpty() || currentPath != null) {
+            currentPath = "/";
+        }
+
+        if (targetItemName.startsWith("/")) {
+            return targetItemName;
+        }
+        if (currentPath.endsWith("/")) {
+            return currentPath + targetItemName;
+        } else {
+            return currentPath + "/" + targetItemName;
+        }
     }
 
     /* ── ls() ─────────────────────────────────────────────── */
@@ -354,11 +384,14 @@ public class Controller {
     @FXML
     public void handleRmdir() {
         try {
-            for (String selectedItem : selectedItems) {
+            List<String> dirsToRemove = getChosenItems();
+
+            for (String selectedItem : dirsToRemove) {
                 ftpClient.rmdir(selectedItem);
             }
             log("Directory removed successfully!");
             logger.info("Directory removed successfully!");
+            handleLs();
         } catch (Exception e) {
             log("Error during removing the directory: " + e.getMessage());
             logger.error("Error during removing the directory: " + e.getMessage());
@@ -396,11 +429,13 @@ public class Controller {
     @FXML
     public void handleDel() {
         try {
-            for (String selectedItem : selectedItems) {
+            List<String> filesToRemove = getChosenItems();
+            for (String selectedItem : filesToRemove) {
                 ftpClient.del(selectedItem);
             }
             log("Files deleted successfully!");
             logger.info("Files deleted successfully");
+            handleLs();
         } catch (Exception e) {
             log("Error during deleting files: " + e.getMessage());
             logger.error("Error during deleting files: " + e.getMessage());
@@ -421,24 +456,26 @@ public class Controller {
                 String chosenDirPath = selectedDir.getAbsolutePath();
 
                 for (String fileToDownload : contentsToDownload) {
-                    String remoteFilename = new File(fileToDownload).getAbsolutePath();
+                    int lastSlashIndex = fileToDownload.lastIndexOf("/");
+                    String remoteFilename = fileToDownload;
+                    if (lastSlashIndex >= 0) {
+                        remoteFilename = fileToDownload.substring(lastSlashIndex + 1);
+                    }
 
                     File localSaveFile = new File(selectedDir, remoteFilename);
                     String localSavePath = localSaveFile.getAbsolutePath();
 
-                    ftpClient.get(remoteFilename, localSavePath);
+                    ftpClient.get(fileToDownload, localSavePath);
 
                     log("Downloaded: " + remoteFilename + " -> " + chosenDirPath);
                     logger.info("Downloaded: " + fileToDownload + " -> " + localSavePath);
                 }
                 log("All selected files downloaded successfully!");
-            }
-            else {
+            } else {
                 log("Download cancelled by user.");
                 logger.info("Download cancelled by user.");
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log("Error during download: " + e.getMessage());
             logger.error("Error during download: " + e.getMessage());
         }
@@ -447,7 +484,8 @@ public class Controller {
     // 1. Click button Upload
     // 2. Pop up the window for choosing file to upload
     // 3. Choose file to upload
-    // 4. The uploaded file will be uploaded to the current directory getting from pwd.
+    // 4. The uploaded file will be uploaded to the current directory getting from
+    // pwd.
     @FXML
     public void handlePut() {
         try {
@@ -473,32 +511,71 @@ public class Controller {
                 logger.info("All selected files uploaded successfully!");
 
                 handleLs();
-            }
-            else {
+            } else {
                 log("Upload cancelled by user.");
                 logger.info("Upload cancelled by user.");
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log("Error during upload: " + e.getMessage());
             logger.error("Error during upload: " + e.getMessage());
         }
     }
 
-    @FXML
-    public void handleCd() {
-        // 1. os.walk and filter all the dirs to walkthrough all the available directory from the root.
-        // 2. store in a List<String> to display on UI.
-        // 3. User clicks the directory name on the list.
-        // 4. Capture the selection and parse the text to the cmd cd.
+    private void updateBreadcrumbs(String fullPath) {
+        // Clear existing breadcrumbs
+        breadcrumbBar.getChildren().clear();
+
+        // Always add the Root "/" button
+        Hyperlink rootLink = new Hyperlink("/");
+        rootLink.setOnAction(e -> navigateToAbsolutePath("/"));
+        breadcrumbBar.getChildren().add(rootLink);
+
+        if (fullPath.equals("/") || fullPath.isEmpty()) {
+            return; 
+        }
+
+        // Split path (e.g., "/var/www/html" becomes ["", "var", "www", "html"])
+        String[] parts = fullPath.split("/");
+        StringBuilder builtPath = new StringBuilder();
+
+        for (String part : parts) {
+            if (part.trim().isEmpty()) continue; // skip empty splits
+
+            builtPath.append("/").append(part);
+            String targetPath = builtPath.toString(); // final copy for the lambda
+
+            Label separator = new Label(" > ");
+            Hyperlink partLink = new Hyperlink(part);
+            
+            // When this part of the path is clicked, jump straight to it
+            partLink.setOnAction(e -> navigateToAbsolutePath(targetPath));
+
+            breadcrumbBar.getChildren().addAll(separator, partLink);
+        }
+    }
+
+    private void navigateToAbsolutePath(String targetAbsolutePath) {
+        try {
+            ftpClient.cd(targetAbsolutePath);
+
+            remoteCurrentPathField.setText(ftpClient.pwd());
+
+            remoteListView.setItems(FXCollections.observableArrayList(ftpClient.ls()));
+
+            updateBreadcrumbs(ftpClient.pwd());
+            log("Opened directory: " + ftpClient.pwd());
+            logger.info("Opened directory: " + ftpClient.pwd());
+        } catch (Exception e) {
+            log("Error during navigating to directory " + targetAbsolutePath + ": " + e.getMessage()); 
+            logger.error("Error during navigating to directory " + targetAbsolutePath + ": " + e.getMessage());
+        }
     }
 
     @FXML
     public void handlePwd() {
         try {
             remoteCurrentPathField.setText(ftpClient.pwd());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log("Error during priting working directory: " + e.getMessage());
             logger.error("Error during printing working directory: " + e.getMessage());
         }

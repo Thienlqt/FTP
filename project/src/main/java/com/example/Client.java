@@ -66,16 +66,19 @@ public class Client {
     private String readResponse() throws IOException {
         StringBuilder sb = new StringBuilder();
         String line;
-
-        while ((line = in.readLine()) != null) {
-            sb.append(line).append("\n");
-            if (line.length() >= 4
-                    && Character.isDigit(line.charAt(0))
-                    && Character.isDigit(line.charAt(1))
-                    && Character.isDigit(line.charAt(2))
-                    && line.charAt(3) == ' ') {
-                break;
+        try {
+            while ((line = in.readLine()) != null) {
+                sb.append(line).append("\n");
+                if (line.length() >= 4
+                        && Character.isDigit(line.charAt(0))
+                        && Character.isDigit(line.charAt(1))
+                        && Character.isDigit(line.charAt(2))
+                        && line.charAt(3) == ' ') {
+                    break;
+                }
             }
+        } catch (IOException e) {
+            throw new IOException("Failed reading response: " + e.getMessage());
         }
         return sb.toString();
     }
@@ -212,8 +215,10 @@ public class Client {
             pasvWrite.flush();
             pasvWrite.close();
         } finally {
-            if (fileUpload != null) fileUpload.close();
-            if (pasvSocket != null) pasvSocket.close();
+            if (fileUpload != null)
+                fileUpload.close();
+            if (pasvSocket != null)
+                pasvSocket.close();
         }
         String response226 = readResponse();
         if (!response226.startsWith("226")) {

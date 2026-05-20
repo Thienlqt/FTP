@@ -6,6 +6,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.*?>
 
+
 <StackPane xmlns="http://javafx.com/javafx/17"
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.example.Controller"
@@ -58,12 +59,8 @@
                     <HBox styleClass="path-bar" alignment="CENTER_LEFT" spacing="6">
                         <padding><Insets top="6" right="10" bottom="6" left="10"/></padding>
                         <Label text="Remote path:" styleClass="field-label"/>
-                        <TextField fx:id="remoteCurrentPathField" promptText="/  (type path + Enter to cd)"
-                                   HBox.hgrow="ALWAYS" styleClass="path-field" onAction="#handleCd"/>
-                        <Button text="Go" onAction="#handleCd" styleClass="btn-go"/>
-                        <Button text="↑ Up" onAction="#handleCdUp" styleClass="btn-go"/>
                     </HBox>
-                    <ListView fx:id="remoteListView" VBox.vgrow="ALWAYS" styleClass="file-list" onMouseClicked="#handleRemoteDoubleClick"/>
+                    <ListView fx:id="remoteListView" VBox.vgrow="ALWAYS" styleClass="file-list"/>
                     <HBox styleClass="panel-statusbar" alignment="CENTER_LEFT">
                         <padding><Insets top="3" right="10" bottom="3" left="10"/></padding>
                         <Label fx:id="remoteCountLabel" text="0 items" styleClass="statusbar-text"/>
