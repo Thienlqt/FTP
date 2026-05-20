@@ -132,6 +132,18 @@ public class Controller {
         Platform.runLater(() -> logArea.appendText(message + "\r\n"));
     }
 
+    public void handleClearLog() {
+        try {
+            logArea.clear();
+            log("Clearing log successfull!");
+            logger.info("Clearing log successfully!");
+        }
+        catch (Exception e) {
+            log("Error during clearing log:  " + e.getMessage());
+            logger.error("Error during clearing log:  " + e.getMessage());
+        }
+    }
+
     /* ── connect() ─────────────────────────────────────────────── */
 
     @FXML
