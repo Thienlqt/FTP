@@ -115,7 +115,7 @@ public class Controller {
                     if (rawSelected.startsWith("d")) {
                         String folderName = parseItem(rawSelected);
                         String currentPath = remoteCurrentPathField.getText().trim();
-                        String absolutePath = buildFullPath(currentPath, rawSelected);
+                        String absolutePath = buildFullPath(currentPath, folderName);
 
                         navigateToAbsolutePath(absolutePath);
                     }
