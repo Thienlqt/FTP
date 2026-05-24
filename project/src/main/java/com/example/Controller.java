@@ -113,7 +113,7 @@ public class Controller {
                         navigateToAbsolutePath(absolutePath);
                     }
                     else {
-                        log("Selected item is not a dir!");
+                        log("[INFO] Selected item is not a dir!");
                     }
                 }
             }
@@ -169,8 +169,10 @@ public class Controller {
 
             log("Connected successfully!");
         } catch (NumberFormatException e) {
+            e.printStackTrace();
             log("[ERROR] Port must be a valid number: " + e.getMessage());
         } catch (Exception e) {
+            e.printStackTrace();
             log("[ERROR] Connection error: " + e.getMessage());
         }
     }
@@ -184,6 +186,7 @@ public class Controller {
                 ftpClient.quit();
                 log("[ERROR] Disconnect from server.");
             } catch (Exception e) {
+                e.printStackTrace();
                 log("[ERROR] During disconnection: " + e.getMessage());
             }
 
@@ -286,6 +289,7 @@ public class Controller {
             remoteListView.setItems(FXCollections.observableArrayList(ftpClient.ls()));
             log("[INFO] Listed directories & files successfully!");
         } catch (Exception e) {
+            e.printStackTrace();
             log("[ERROR] During listing directory & files: " + e.getMessage());
         }
     }
@@ -302,6 +306,7 @@ public class Controller {
             mkdirName.selectAll(); // cover all the content of the textfield, easy to overwrite
             log("[INFO] Show the form successfully!");
         } catch (Exception e) {
+            e.printStackTrace();
             log("[ERROR] During showing the form: " + e.getMessage());
         }
     }
@@ -312,6 +317,7 @@ public class Controller {
             mkdirForm.setVisible(false);
             log("Closing the form successfully!");
         } catch (Exception e) {
+            e.printStackTrace();
             log("[ERROR] During closing the form: " + e.getMessage());
         }
     }
@@ -333,6 +339,7 @@ public class Controller {
             handleLs(); // refresh the list of files and folders to see the newly created dir
 
         } catch (Exception e) {
+            e.printStackTrace();
             log("[ERROR] During creating directory: " + e.getMessage());
         }
     }
@@ -347,6 +354,7 @@ public class Controller {
             rmdirForm.setVisible(true);
             log("[INFO] Show the form successfully!");
         } catch (Exception e) {
+            e.printStackTrace();
             log("[ERROR] During showing the form: " + e.getMessage());
         }
     }
@@ -357,6 +365,7 @@ public class Controller {
             rmdirForm.setVisible(false);
             log("[INFO] Close the form successfully!");
         } catch (Exception e) {
+            e.printStackTrace();
             log("[ERROR] During closing the form: " + e.getMessage());
         }
     }
@@ -375,6 +384,7 @@ public class Controller {
             hideRmdirForm();
             handleLs();
         } catch (Exception e) {
+            e.printStackTrace();
             log("[ERROR] During removing the directory: " + e.getMessage());
         }
     }
@@ -389,6 +399,7 @@ public class Controller {
             delForm.setVisible(true);
             log("[INFO] Show the form successfully!");
         } catch (Exception e) {
+            e.printStackTrace();
             log("[ERROR] During showing the form: " + e.getMessage());
         }
     }
@@ -399,6 +410,7 @@ public class Controller {
             delForm.setVisible(false);
             log("[INFO] Close the form successfully!");
         } catch (Exception e) {
+            e.printStackTrace();
             log("[ERROR] During closing the form: " + e.getMessage());
         }
     }
@@ -414,6 +426,7 @@ public class Controller {
             hideDelForm();
             handleLs();
         } catch (Exception e) {
+            e.printStackTrace();
             log("[ERROR] During deleting files: " + e.getMessage());
         }
     }
@@ -450,6 +463,7 @@ public class Controller {
                 log("[INFO] Download cancelled by user.");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             log("[ERROR] During download: " + e.getMessage());
         }
     }
@@ -484,6 +498,7 @@ public class Controller {
                 log("[INFO] Upload cancelled by user.");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             log("[ERROR] During upload: " + e.getMessage());
         }
     }
@@ -532,6 +547,7 @@ public class Controller {
             updateBreadcrumbs(handlePwd());
             log("[INFO] Opened directory: " + handlePwd());
         } catch (Exception e) {
+            e.printStackTrace();
             log("[ERROR] During navigating to directory " + targetAbsolutePath + ": " + e.getMessage()); 
         }
     }
@@ -545,6 +561,7 @@ public class Controller {
             
             finalResult = pathFromRawResponse;
         } catch (Exception e) {
+            e.printStackTrace();
             log("[ERROR] During printing working directory: " + e.getMessage());
         }
         return finalResult;
