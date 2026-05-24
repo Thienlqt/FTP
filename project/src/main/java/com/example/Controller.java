@@ -10,7 +10,6 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -22,6 +21,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public class Controller {
@@ -72,9 +72,6 @@ public class Controller {
 
     @FXML
     private ListView<String> remoteListView; // file list from "ls" command
-
-    @FXML
-    private ProgressIndicator progressIndicator;
 
     @FXML
     private StackPane mkdirForm; // pop-up form for the creating dir
@@ -167,7 +164,7 @@ public class Controller {
             connectBtn.setDisable(true);
             disconnectBtn.setDisable(false);
 
-            log("Connected successfully!");
+            log("[INFO] Connected successfully!");
         } catch (NumberFormatException e) {
             e.printStackTrace();
             log("[ERROR] Port must be a valid number: " + e.getMessage());
@@ -184,7 +181,7 @@ public class Controller {
         if (ftpClient != null) {
             try {
                 ftpClient.quit();
-                log("[ERROR] Disconnect from server.");
+                log("[INFO] Disconnect from server.");
             } catch (Exception e) {
                 e.printStackTrace();
                 log("[ERROR] During disconnection: " + e.getMessage());
@@ -296,11 +293,27 @@ public class Controller {
 
     /* ── Mkdir Form ─────────────────────────────────────────────── */
 
+    private String generateDirname() throws IOException {
+        Set<String> existingNames = new HashSet<>();
+        for (String item : ftpClient.ls()) {
+            existingNames.add(parseItem(item));
+        }
+
+        String baseName = "New_Directory";
+        String dirName = baseName;
+        int count = 1;
+        while (existingNames.contains(dirName)) {
+            dirName = baseName + count;
+            count++;
+        }
+        return dirName;
+    }
+
     @FXML
     public void showMkdirForm() {
         try {
             mkdirName.clear();
-            mkdirName.setText("New_Directory");
+            mkdirName.setText(generateDirname());
             mkdirForm.setVisible(true);
             mkdirForm.requestFocus(); // bring the cursor to inside the textfield
             mkdirName.selectAll(); // cover all the content of the textfield, easy to overwrite
@@ -315,7 +328,7 @@ public class Controller {
     public void hideMkdirForm() {
         try {
             mkdirForm.setVisible(false);
-            log("Closing the form successfully!");
+            log("[INFO] Closing the form successfully!");
         } catch (Exception e) {
             e.printStackTrace();
             log("[ERROR] During closing the form: " + e.getMessage());
@@ -325,7 +338,7 @@ public class Controller {
     /* ── mkdir ─────────────────────────────────────────────── */
 
     @FXML
-    public void handleMkdir() {
+    public void handleMkdir() throws IOException{
         String dirName = mkdirName.getText().trim();
         if (dirName.isEmpty()) {
             log("[WARN] Folder name cannot be empty!");
@@ -338,7 +351,12 @@ public class Controller {
             hideMkdirForm(); // close the form immediately after the dir was created
             handleLs(); // refresh the list of files and folders to see the newly created dir
 
-        } catch (Exception e) {
+        } 
+        catch (IOException e) {
+            e.printStackTrace();
+            log("[ERROR] IOException: " + e.getMessage());
+        }
+        catch (Exception e) {
             e.printStackTrace();
             log("[ERROR] During creating directory: " + e.getMessage());
         }
@@ -436,14 +454,11 @@ public class Controller {
         List<String> contentsToDownload = getChosenItems();
         try {
             DirectoryChooser dirChooser = new DirectoryChooser();
-            dirChooser.setTitle("Select Destination Folder to Save Files");
-
             Window stage = actionToolbar.getScene().getWindow();
             File selectedDir = dirChooser.showDialog(stage);
-
             if (selectedDir != null) {
                 String chosenDirPath = selectedDir.getAbsolutePath();
-
+            
                 for (String fileToDownload : contentsToDownload) {
                     int lastSlashIndex = fileToDownload.lastIndexOf("/");
                     String remoteFilename = fileToDownload;
@@ -477,8 +492,6 @@ public class Controller {
     public void handlePut() {
         try {
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Select Files To Upload");
-
             Window stage = actionToolbar.getScene().getWindow();
             List<File> selectedFiles = fileChooser.showOpenMultipleDialog(stage);
 
@@ -490,7 +503,7 @@ public class Controller {
 
                     ftpClient.put(localFilename, remoteFilename);
 
-                    log("Uploaded: " + localFilename);
+                    log("[INFO] Uploaded: \n" + localFilename + "\n");
                 }
                 handleLs();
                 log("[INFO] All selected files uploaded successfully!");

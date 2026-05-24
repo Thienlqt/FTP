@@ -90,53 +90,71 @@
     </BorderPane>
 
     <!-- ── Mkdir Form ──────────────────────────────────────── -->
-
-    <StackPane fx:id="mkdirForm" visible="false" styleClass="stack-pane-divider">
-        <VBox alignment="CENTER" spacing="15" maxWidth="300" maxHeight="140"
-              styleClass="vbox-mkdirForm-divider">
-            <Label text="Enter New Folder Name:" styleClass="label-mkdirForm-divider"/>
-            
-            <TextField fx:id="mkdirName" promptText="e.g. New_Folder" onAction="#handleMkdir"/>
-            
-            <HBox alignment="CENTER_RIGHT" spacing="10">
-                <Button text="Cancel" onAction="#hideMkdirForm" style="-fx-cursor: hand;"/>
-                <Button text="Save" onAction="#handleMkdir" styleClass="btn-saveMkdir"/>
+    <StackPane fx:id="mkdirForm" visible="false" maxHeight="-Infinity">
+        <VBox maxWidth="300" styleClass="vbox-form-card">
+            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="form-card-header">
+                <Label text="📁" styleClass="form-icon-green"/>
+                <VBox spacing="3">
+                    <Label text="New Folder" styleClass="form-card-title"/>
+                    <Label text="Create a directory on the remote server" styleClass="form-card-sub"/>
+                </VBox>
             </HBox>
+            <Region styleClass="form-header-sep"/>
+            <VBox spacing="12" styleClass="form-card-body">
+                <Label text="FOLDER NAME" styleClass="form-field-label"/>
+                <TextField fx:id="mkdirName" promptText="e.g. New_Folder"
+                        onAction="#handleMkdir" styleClass="input-field"/>
+                <HBox alignment="CENTER_RIGHT" spacing="8">
+                    <Button text="Cancel" onAction="#hideMkdirForm" styleClass="btn-form-cancel"/>
+                    <Button text="Create Folder" onAction="#handleMkdir" styleClass="btn-form-save"/>
+                </HBox>
+            </VBox>
         </VBox>
     </StackPane>
 
     <!-- ── Rmdir Form ──────────────────────────────────────── -->
-
-    <StackPane fx:id="rmdirForm" visible="false" styleClass="stackpane-form-divider">
-        <VBox alignment="CENTER" spacing="15" maxWidth="320" maxHeight="130"
-              styleClass="vbox-form-divider">
-            
-            <Label text="Are you sure you want to delete these directories?" 
-                   wrapText="true" textAlignment="CENTER" 
-                   styleClass="label-form-divider"/>
-            <TextArea fx:id="dirsToDelete" editable="false" prefRowCount="4"/>
-            
-            <HBox alignment="CENTER" spacing="15">
-                <Button text="Cancel" onAction="#hideRmdirForm" style="-fx-cursor: hand;"/>
-                <Button text="Confirm" onAction="#handleRmdir" styleClass="btn-danger"/>
+    <StackPane fx:id="rmdirForm" visible="false" maxHeight="-Infinity">
+        <VBox maxWidth="320" styleClass="vbox-form-card">
+            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="form-card-header">
+                <Label text="🗑" styleClass="form-icon-red"/>
+                <VBox spacing="3">
+                    <Label text="Remove Directories" styleClass="form-card-title"/>
+                    <Label text="This action cannot be undone" styleClass="form-card-sub form-card-sub-danger"/>
+                </VBox>
             </HBox>
+            <Region styleClass="form-header-sep"/>
+            <VBox spacing="12" styleClass="form-card-body">
+                <Label text="SELECTED DIRECTORIES" styleClass="form-field-label"/>
+                <TextArea fx:id="dirsToDelete" editable="false" prefRowCount="3"
+                        styleClass="form-preview-area"/>
+                <HBox alignment="CENTER_RIGHT" spacing="8">
+                    <Button text="Cancel" onAction="#hideRmdirForm" styleClass="btn-form-cancel"/>
+                    <Button text="Delete All" onAction="#handleRmdir" styleClass="btn-form-danger"/>
+                </HBox>
+            </VBox>
         </VBox>
     </StackPane>
 
     <!-- ── Del Form ──────────────────────────────────────── -->
-
-    <StackPane fx:id="delForm" visible="false" styleClass="stackpane-form-divider">
-        <VBox alignment="CENTER" spacing="15" maxWidth="320" maxHeight="130"
-              styleClass="vbox-form-divider">
-            
-            <Label text="Are you sure you want to delete these files?" 
-                   wrapText="true" textAlignment="CENTER" 
-                   styleClass="label-form-divider"/>
-            <TextArea fx:id="filesToDelete" editable="false" prefRowCount="4"/>
-            <HBox alignment="CENTER" spacing="15">
-                <Button text="Cancel" onAction="#hideDelForm" style="-fx-cursor: hand;"/>
-                <Button text="Confirm" onAction="#handleDel" styleClass="btn-danger"/>
+    <StackPane fx:id="delForm" visible="false" maxHeight="-Infinity">
+        <VBox maxWidth="320" styleClass="vbox-form-card">
+            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="form-card-header">
+                <Label text="✕" styleClass="form-icon-red"/>
+                <VBox spacing="3">
+                    <Label text="Delete Files" styleClass="form-card-title"/>
+                    <Label text="This action cannot be undone" styleClass="form-card-sub form-card-sub-danger"/>
+                </VBox>
             </HBox>
+            <Region styleClass="form-header-sep"/>
+            <VBox spacing="12" styleClass="form-card-body">
+                <Label text="SELECTED FILES" styleClass="form-field-label"/>
+                <TextArea fx:id="filesToDelete" editable="false" prefRowCount="3"
+                        styleClass="form-preview-area"/>
+                <HBox alignment="CENTER_RIGHT" spacing="8">
+                    <Button text="Cancel" onAction="#hideDelForm" styleClass="btn-form-cancel"/>
+                    <Button text="Delete All" onAction="#handleDel" styleClass="btn-form-danger"/>
+                </HBox>
+            </VBox>
         </VBox>
     </StackPane>
 

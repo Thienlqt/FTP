@@ -4,7 +4,7 @@
    ═══════════════════════════════════════════════════════════ */
 
 .root {
-    -fx-font-family: "Segoe UI", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    -fx-font-family: "Segoe UI";
     -fx-font-size: 13px;
     -fx-background-color: #f0f2f5;
 }
@@ -64,12 +64,6 @@
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
     -fx-padding: 5 14 5 14;
-    -fx-cursor: hand;
-}
-
-.btn-saveMkdir {
-    -fx-base: #28a745; 
-    -fx-text-fill: white; 
     -fx-cursor: hand;
 }
 
@@ -256,21 +250,125 @@
     -fx-padding: 0;
 }
 
-/* ── StackPane mkdirForm divider ───────────────────────────────────── */
-.stackpane-form-divider {
-    -fx-background-color: rgba(0, 0, 0, 0.4);
+/* ── Form card base ──────────────────────────────────── */
+.vbox-form-card {
+    -fx-background-color: #23272f;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: #3a3f4a;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(three-pass-box, #00000099, 24, 0, 0, 8);
 }
 
-.vbox-form-divider {
-    -fx-background-color: white; 
-    -fx-padding: 20; -fx-background-radius: 8; 
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 5);
+/* ── Form header section ─────────────────────────────── */
+.form-card-header {
+    -fx-background-color: #1e2228;
+    -fx-background-radius: 12 12 0 0;
+    -fx-padding: 8 6 8 6;
 }
 
-.label-form-divider {
-    -fx-font-size: 14px; 
+.form-card-body {
+    -fx-padding: 5 5 5 5;
+    -fx-spacing: 8;
+}
+
+/* ── Separator line under header (use a Region instead) ─ */
+/* targets the Region with styleClass "form-header-sep" */
+.form-header-sep {
+    -fx-background-color: #2d3139;
+    -fx-min-height: 1;
+    -fx-max-height: 1;
+    -fx-pref-height: 1;
+}
+
+/* ── Icon badges ─────────────────────────────────────── */
+.form-icon-green {
+    -fx-background-color: #1a3d2b;
+    -fx-background-radius: 8;
+    -fx-text-fill: #4caf82;
+    -fx-font-size: 15px;
+    -fx-padding: 6 8 6 8;
+}
+
+.form-icon-red {
+    -fx-background-color: #3d1a1a;
+    -fx-background-radius: 8;
+    -fx-text-fill: #e05c4b;
+    -fx-font-size: 15px;
+    -fx-padding: 6 8 6 8;
+}
+
+/* ── Form title & subtitle ───────────────────────────── */
+.form-card-title {
+    -fx-text-fill: #e8eaed;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
+
+.form-card-sub {
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 12px;
+}
+
+.form-card-sub-danger {
+    -fx-text-fill: #a05050;
+}
+
+/* ── Field label ─────────────────────────────────────── */
+.form-field-label {
+    -fx-text-fill: #5c6370;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+/* ── File preview TextArea ───────────────────────────── */
+.form-preview-area {
+    -fx-control-inner-background: #1a1d23;
+    -fx-text-fill: #c9d1d9;
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 12px;
+    -fx-border-color: #2d3139;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-highlight-fill: #264f78;
+}
+
+/* ── Buttons ─────────────────────────────────────────── */
+.btn-form-cancel {
+    -fx-background-color: #2d3139;
+    -fx-text-fill: #9ca3af;
+    -fx-border-color: #3a3f4a;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 6 14 6 14;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+.btn-form-cancel:hover { -fx-background-color: #363c46; -fx-text-fill: #c9d1d9; }
+
+.btn-form-save {
+    -fx-background-color: #2d9e5f;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 6 14 6 14;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+.btn-form-save:hover { -fx-background-color: #38b870; }
+
+.btn-form-danger {
+    -fx-background-color: #c0392b;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 6 14 6 14;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+.btn-form-danger:hover { -fx-background-color: #e74c3c; }
 
 /* ── SplitPane divider ───────────────────────────────────── */
 .split-pane-divider {

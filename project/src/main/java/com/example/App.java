@@ -14,6 +14,7 @@ public class App extends Application {
         Parent root = loader.load();
 
         Scene scene = new Scene(root, 960, 640);
+        scene.getStylesheets().add(getClass().getResource("/com/example/styles.css").toExternalForm());
         primaryStage.setTitle("FTP Client");
         primaryStage.setScene(scene);
         primaryStage.show();
