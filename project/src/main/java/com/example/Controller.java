@@ -24,21 +24,16 @@ import javafx.stage.Window;
 import java.io.File;
 import java.util.*;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class Controller {
     private Client ftpClient;
     private int port = 21;
-
-    private static final Logger logger = LogManager.getLogger(Controller.class);
 
     @FXML
     private TextField hostField;
     @FXML
     private TextField userField;
     @FXML
-    private TextField remoteCurrentPathField; // show current path for pwd cmd
+    private TextField remoteCurrentPath; // show current path for pwd cmd
     @FXML
     private TextField mkdirName; // name the dir to create
 
@@ -105,14 +100,14 @@ public class Controller {
 
         downBtn.disableProperty().bind(
                 Bindings.isEmpty(remoteListView.getSelectionModel().getSelectedItems()));
-    
+
         remoteListView.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 String rawSelected = remoteListView.getSelectionModel().getSelectedItem();
                 if (rawSelected != null) {
                     if (rawSelected.startsWith("d")) {
                         String folderName = parseItem(rawSelected);
-                        String currentPath = remoteCurrentPathField.getText().trim();
+                        String currentPath = remoteCurrentPath.getText().trim();
                         String absolutePath = buildFullPath(currentPath, folderName);
 
                         navigateToAbsolutePath(absolutePath);
@@ -133,12 +128,10 @@ public class Controller {
     public void handleClearLog() {
         try {
             logArea.clear();
-            log("Clearing log successfull!");
-            logger.info("Clearing log successfully!");
+            log("[INFO] Clearing log successfull!");
         }
         catch (Exception e) {
-            log("Error during clearing log:  " + e.getMessage());
-            logger.error("Error during clearing log:  " + e.getMessage());
+            log("[ERROR] During clearing log:  " + e.getMessage());
         }
     }
 
@@ -151,39 +144,34 @@ public class Controller {
         String pass = passField.getText().trim();
 
         if (host.isEmpty()) {
-            log("Host and Port cannot be empty!");
-            logger.error("Host and Port cannot be empty!");
+            log("[INFO] Host and Port cannot be empty!");
             return;
         }
 
         try {
             ftpClient = new Client();
             ftpClient.connect(host, port);
-            log("Connected to " + host + " on " + port);
-            logger.info("Connected to " + host + " on " + port);
+            log("[INFO] Connected to " + host + " on " + port);
 
             ftpClient.login(user, pass);
-            log("Log in with " + user);
-            logger.info("Log in with " + user);
+            log("[INFO] Log in with " + user);
 
             statusLabel.setText("● Connected");
             statusLabel.getStyleClass().remove("status-disconnected");
             statusLabel.getStyleClass().add("status-connected");
             bottomStatusLabel.setText("Connected to " + host);
             handleLs();
+            remoteCurrentPath.setText(handlePwd());
 
             actionToolbar.setDisable(false);
             connectBtn.setDisable(true);
             disconnectBtn.setDisable(false);
 
             log("Connected successfully!");
-            logger.info("Connected successfully");
         } catch (NumberFormatException e) {
-            log("Port must be a valid number: " + e.getMessage());
-            logger.error("Port must be a valid number: " + e.getMessage());
+            log("[ERROR] Port must be a valid number: " + e.getMessage());
         } catch (Exception e) {
-            log("Connection error: " + e.getMessage());
-            logger.error("Connection error: " + e.getMessage());
+            log("[ERROR] Connection error: " + e.getMessage());
         }
     }
 
@@ -194,11 +182,9 @@ public class Controller {
         if (ftpClient != null) {
             try {
                 ftpClient.quit();
-                log("Disconnect from server.");
-                logger.info("Disconnect from server.");
+                log("[ERROR] Disconnect from server.");
             } catch (Exception e) {
-                log("Error during disconnection: " + e.getMessage());
-                logger.error("Error during disconnection: " + e.getMessage());
+                log("[ERROR] During disconnection: " + e.getMessage());
             }
 
             statusLabel.setText("● Disconnected");
@@ -212,7 +198,7 @@ public class Controller {
 
             remoteListView.getItems().clear();
             remoteCountLabel.setText("0 items");
-            remoteCurrentPathField.clear();
+            remoteCurrentPath.clear();
         }
     }
 
@@ -220,18 +206,16 @@ public class Controller {
      * ── Helper to get multiple items from ls()
      * ───────────────────────────────────────────────
      */
-
-    ObservableList<String> selectedItems = remoteListView.getSelectionModel().getSelectedItems();
-
     @FXML
     private List<String> getChosenItems() {
+        ObservableList<String> selectedItems = remoteListView.getSelectionModel().getSelectedItems();
         List<String> fullpaths = new ArrayList<>();
 
         if (selectedItems == null || selectedItems.isEmpty()) {
             return fullpaths;
         }
 
-        String currentPath = remoteCurrentPathField.getText().trim();
+        String currentPath = remoteCurrentPath.getText().trim();
 
         for (String selectedItem : selectedItems) {
             if (selectedItem != null && !selectedItem.trim().isEmpty()) {
@@ -277,7 +261,7 @@ public class Controller {
     }
 
     private String buildFullPath(String currentPath, String targetItemName) {
-        if (currentPath.isEmpty() || currentPath != null) {
+        if (currentPath.isEmpty() && currentPath != null) {
             currentPath = "/";
         }
 
@@ -300,11 +284,9 @@ public class Controller {
             // from ArrayList<String> to observableArrayList
             // in order to be able to display to the field remoteListView in UI.
             remoteListView.setItems(FXCollections.observableArrayList(ftpClient.ls()));
-            log("Listed directories & files successfully!");
-            logger.info("Listed directories & files successfully!");
+            log("[INFO] Listed directories & files successfully!");
         } catch (Exception e) {
-            log("Error during listing directory & files: " + e.getMessage());
-            logger.error("Error during listing directory & files: " + e.getMessage());
+            log("[ERROR] During listing directory & files: " + e.getMessage());
         }
     }
 
@@ -318,11 +300,9 @@ public class Controller {
             mkdirForm.setVisible(true);
             mkdirForm.requestFocus(); // bring the cursor to inside the textfield
             mkdirName.selectAll(); // cover all the content of the textfield, easy to overwrite
-            log("show the form successfully!");
-            logger.info("show the form successfully!");
+            log("[INFO] Show the form successfully!");
         } catch (Exception e) {
-            log("Error during showing the form: " + e.getMessage());
-            logger.error("Error during showing the form: " + e.getMessage());
+            log("[ERROR] During showing the form: " + e.getMessage());
         }
     }
 
@@ -331,10 +311,8 @@ public class Controller {
         try {
             mkdirForm.setVisible(false);
             log("Closing the form successfully!");
-            logger.info("Closing the form successfully!");
         } catch (Exception e) {
-            log("Error during closing the form: " + e.getMessage());
-            logger.error("Error during closing the form: " + e.getMessage());
+            log("[ERROR] During closing the form: " + e.getMessage());
         }
     }
 
@@ -344,21 +322,18 @@ public class Controller {
     public void handleMkdir() {
         String dirName = mkdirName.getText().trim();
         if (dirName.isEmpty()) {
-            log("Folder name cannot be empty!");
-            logger.error("Folder name cannot be empty!");
+            log("[WARN] Folder name cannot be empty!");
             return;
         }
         try {
             ftpClient.mkdir(dirName);
-            log("Created directory '" + dirName + "' successfully!");
-            logger.info("Created directory '" + dirName + "' successfully!");
+            log("[INFO] Created directory '" + dirName + "' successfully!");
 
             hideMkdirForm(); // close the form immediately after the dir was created
             handleLs(); // refresh the list of files and folders to see the newly created dir
 
         } catch (Exception e) {
-            log("Error during creating directory: " + e.getMessage());
-            logger.error("Error during creating directory: " + e.getMessage());
+            log("[ERROR] During creating directory: " + e.getMessage());
         }
     }
 
@@ -370,11 +345,9 @@ public class Controller {
         try {
             dirsToDelete.setText(String.join("\n", contentsToDelete));
             rmdirForm.setVisible(true);
-            log("Show the form successfully!");
-            logger.info("Show the form successfully!");
+            log("[INFO] Show the form successfully!");
         } catch (Exception e) {
-            log("Error during showing the form: " + e.getMessage());
-            logger.error("Error during showing the form: " + e.getMessage());
+            log("[ERROR] During showing the form: " + e.getMessage());
         }
     }
 
@@ -382,11 +355,9 @@ public class Controller {
     public void hideRmdirForm() {
         try {
             rmdirForm.setVisible(false);
-            log("Close the form successfully!");
-            logger.info("Close the form successfully!");
+            log("[INFO] Close the form successfully!");
         } catch (Exception e) {
-            log("Error during closing the form: " + e.getMessage());
-            logger.error("Error during closing the form: " + e.getMessage());
+            log("[ERROR] During closing the form: " + e.getMessage());
         }
     }
 
@@ -400,12 +371,11 @@ public class Controller {
             for (String selectedItem : dirsToRemove) {
                 ftpClient.rmdir(selectedItem);
             }
-            log("Directory removed successfully!");
-            logger.info("Directory removed successfully!");
+            log("[INFO] Directory removed successfully!");
+            hideRmdirForm();
             handleLs();
         } catch (Exception e) {
-            log("Error during removing the directory: " + e.getMessage());
-            logger.error("Error during removing the directory: " + e.getMessage());
+            log("[ERROR] During removing the directory: " + e.getMessage());
         }
     }
 
@@ -417,11 +387,9 @@ public class Controller {
         try {
             filesToDelete.setText(String.join("\n", contentsToDelete));
             delForm.setVisible(true);
-            log("Show the form successfully!");
-            logger.info("Show the form successfully!");
+            log("[INFO] Show the form successfully!");
         } catch (Exception e) {
-            log("Error during showing the form: " + e.getMessage());
-            logger.error("Error during showing the form: " + e.getMessage());
+            log("[ERROR] During showing the form: " + e.getMessage());
         }
     }
 
@@ -429,11 +397,9 @@ public class Controller {
     public void hideDelForm() {
         try {
             delForm.setVisible(false);
-            log("Close the form successfully!");
-            logger.info("Close the form successfully!");
+            log("[INFO] Close the form successfully!");
         } catch (Exception e) {
-            log("Error during closing the form: " + e.getMessage());
-            logger.error("Error during closing the form: " + e.getMessage());
+            log("[ERROR] During closing the form: " + e.getMessage());
         }
     }
 
@@ -444,12 +410,11 @@ public class Controller {
             for (String selectedItem : filesToRemove) {
                 ftpClient.del(selectedItem);
             }
-            log("Files deleted successfully!");
-            logger.info("Files deleted successfully");
+            log("[INFO] Files deleted successfully!");
+            hideDelForm();
             handleLs();
         } catch (Exception e) {
-            log("Error during deleting files: " + e.getMessage());
-            logger.error("Error during deleting files: " + e.getMessage());
+            log("[ERROR] During deleting files: " + e.getMessage());
         }
     }
 
@@ -478,17 +443,14 @@ public class Controller {
 
                     ftpClient.get(fileToDownload, localSavePath);
 
-                    log("Downloaded: " + remoteFilename + " -> " + chosenDirPath);
-                    logger.info("Downloaded: " + fileToDownload + " -> " + localSavePath);
+                    log("[INFO] Downloaded: " + remoteFilename + " -> " + chosenDirPath);
                 }
-                log("All selected files downloaded successfully!");
+                log("[INFO] All selected files downloaded successfully!");
             } else {
-                log("Download cancelled by user.");
-                logger.info("Download cancelled by user.");
+                log("[INFO] Download cancelled by user.");
             }
         } catch (Exception e) {
-            log("Error during download: " + e.getMessage());
-            logger.error("Error during download: " + e.getMessage());
+            log("[ERROR] During download: " + e.getMessage());
         }
     }
 
@@ -515,20 +477,14 @@ public class Controller {
                     ftpClient.put(localFilename, remoteFilename);
 
                     log("Uploaded: " + localFilename);
-                    logger.info("Uploaded: " + localFilename + "->");
                 }
-
-                log("All selected files uploaded successfully!");
-                logger.info("All selected files uploaded successfully!");
-
                 handleLs();
+                log("[INFO] All selected files uploaded successfully!");
             } else {
-                log("Upload cancelled by user.");
-                logger.info("Upload cancelled by user.");
+                log("[INFO] Upload cancelled by user.");
             }
         } catch (Exception e) {
-            log("Error during upload: " + e.getMessage());
-            logger.error("Error during upload: " + e.getMessage());
+            log("[ERROR] During upload: " + e.getMessage());
         }
     }
 
@@ -569,26 +525,28 @@ public class Controller {
         try {
             ftpClient.cd(targetAbsolutePath);
 
-            remoteCurrentPathField.setText(ftpClient.pwd());
+            remoteCurrentPath.setText(handlePwd());
 
             remoteListView.setItems(FXCollections.observableArrayList(ftpClient.ls()));
 
-            updateBreadcrumbs(ftpClient.pwd());
-            log("Opened directory: " + ftpClient.pwd());
-            logger.info("Opened directory: " + ftpClient.pwd());
+            updateBreadcrumbs(handlePwd());
+            log("[INFO] Opened directory: " + handlePwd());
         } catch (Exception e) {
-            log("Error during navigating to directory " + targetAbsolutePath + ": " + e.getMessage()); 
-            logger.error("Error during navigating to directory " + targetAbsolutePath + ": " + e.getMessage());
+            log("[ERROR] During navigating to directory " + targetAbsolutePath + ": " + e.getMessage()); 
         }
     }
 
     @FXML
-    public void handlePwd() {
+    private String handlePwd() {
+        String finalResult = "";
         try {
-            remoteCurrentPathField.setText(ftpClient.pwd());
+            String rawResponse = ftpClient.pwd();
+            String pathFromRawResponse = rawResponse.substring(rawResponse.indexOf("\"") + 1, rawResponse.lastIndexOf("\""));
+            
+            finalResult = pathFromRawResponse;
         } catch (Exception e) {
-            log("Error during priting working directory: " + e.getMessage());
-            logger.error("Error during printing working directory: " + e.getMessage());
+            log("[ERROR] During printing working directory: " + e.getMessage());
         }
+        return finalResult;
     }
 }

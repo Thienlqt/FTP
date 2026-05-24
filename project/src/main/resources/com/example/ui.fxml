@@ -25,7 +25,7 @@
                     <Label text="Host:" styleClass="field-label"/>
                     <TextField fx:id="hostField" promptText="localhost" prefWidth="130" styleClass="input-field"/>
                     <Label text="Port:" styleClass="field-label"/>
-                    <TextField text="21" prefWidth="55" styleClass="port-field"/>
+                    <TextField text="21" prefWidth="55" editable="false" styleClass="port-field"/>
                     <Label text="User:" styleClass="field-label"/>
                     <TextField fx:id="userField" promptText="username" prefWidth="110" styleClass="input-field"/>
                     <Label text="Pass:" styleClass="field-label"/>
@@ -59,9 +59,9 @@
                     <HBox styleClass="path-bar" alignment="CENTER_LEFT" spacing="6">
                         <padding><Insets top="6" right="10" bottom="6" left="10"/></padding>
                         <Label text="Remote path:" styleClass="field-label"/>
-                    </HBox>
+                        <TextField fx:id="remoteCurrentPath" editable="false" HBox.hgrow="ALWAYS" styleClass="input-field"/>                    </HBox>
                     <ListView fx:id="remoteListView" VBox.vgrow="ALWAYS" styleClass="file-list"/>
-                    <HBox styleClass="panel-statusbar" alignment="CENTER_LEFT">
+                    <HBox fx:id="breadcrumbBar" styleClass="panel-statusbar" alignment="CENTER_LEFT">
                         <padding><Insets top="3" right="10" bottom="3" left="10"/></padding>
                         <Label fx:id="remoteCountLabel" text="0 items" styleClass="statusbar-text"/>
                     </HBox>
@@ -89,12 +89,12 @@
         </bottom>
     </BorderPane>
 
-    /* ── Mkdir Form ──────────────────────────────────────── */
+    <!-- ── Mkdir Form ──────────────────────────────────────── -->
 
-    <StackPane fx:id="mkdirForm" visible="false" style="stack-pane-divider">
+    <StackPane fx:id="mkdirForm" visible="false" styleClass="stack-pane-divider">
         <VBox alignment="CENTER" spacing="15" maxWidth="300" maxHeight="140"
               styleClass="vbox-mkdirForm-divider">
-            <Label text="Enter New Folder Name:" styleClas="label-mkdirForm-divider"/>
+            <Label text="Enter New Folder Name:" styleClass="label-mkdirForm-divider"/>
             
             <TextField fx:id="mkdirName" promptText="e.g. New_Folder" onAction="#handleMkdir"/>
             
@@ -105,16 +105,16 @@
         </VBox>
     </StackPane>
 
-    /* ── Rmdir Form ──────────────────────────────────────── */
+    <!-- ── Rmdir Form ──────────────────────────────────────── -->
 
-    <StackPane fx:id="rmdirForm" visible="false" editable="false" styleClass="stackpane-form-divider">
+    <StackPane fx:id="rmdirForm" visible="false" styleClass="stackpane-form-divider">
         <VBox alignment="CENTER" spacing="15" maxWidth="320" maxHeight="130"
               styleClass="vbox-form-divider">
             
             <Label text="Are you sure you want to delete these directories?" 
                    wrapText="true" textAlignment="CENTER" 
                    styleClass="label-form-divider"/>
-            <TextArea fx:id="dirsToDelete" editable="false" prefRowCount=4/>
+            <TextArea fx:id="dirsToDelete" editable="false" prefRowCount="4"/>
             
             <HBox alignment="CENTER" spacing="15">
                 <Button text="Cancel" onAction="#hideRmdirForm" style="-fx-cursor: hand;"/>
@@ -123,16 +123,16 @@
         </VBox>
     </StackPane>
 
-    /* ── Del Form ──────────────────────────────────────── */
+    <!-- ── Del Form ──────────────────────────────────────── -->
 
-    <StackPane fx:id="delForm" visible="false" editable="false" styleClass="stackpane-form-divider">
+    <StackPane fx:id="delForm" visible="false" styleClass="stackpane-form-divider">
         <VBox alignment="CENTER" spacing="15" maxWidth="320" maxHeight="130"
               styleClass="vbox-form-divider">
             
             <Label text="Are you sure you want to delete these files?" 
                    wrapText="true" textAlignment="CENTER" 
                    styleClass="label-form-divider"/>
-            <TextArea fx:id="filesToDelete" editable="false" prefRowCount=4>
+            <TextArea fx:id="filesToDelete" editable="false" prefRowCount="4"/>
             <HBox alignment="CENTER" spacing="15">
                 <Button text="Cancel" onAction="#hideDelForm" style="-fx-cursor: hand;"/>
                 <Button text="Confirm" onAction="#handleDel" styleClass="btn-danger"/>
