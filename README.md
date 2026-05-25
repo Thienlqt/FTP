@@ -131,7 +131,6 @@ Build plugins: `javafx-maven-plugin 0.0.8` (for `mvn javafx:run`), `maven-shade-
 
 ## Known Limitations
 
-- The port is hard-coded to **21** and is not editable in the UI.
 - Only **passive mode (PASV)** is supported; active mode (PORT) is not implemented.
 - Upload always stores files in the **current remote directory**; there is no remote path input for `STOR`.
 - No TLS/FTPS support — all traffic is unencrypted.

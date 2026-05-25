@@ -84,7 +84,6 @@
                 <padding><Insets top="5" right="16" bottom="5" left="16"/></padding>
                 <Label fx:id="bottomStatusLabel" text="Ready." styleClass="statusbar-text"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <ProgressIndicator fx:id="progressIndicator" prefWidth="18" prefHeight="18" visible="false" styleClass="progress-indicator"/>
             </HBox>
         </bottom>
     </BorderPane>
