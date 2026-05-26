@@ -134,6 +134,7 @@
     -fx-background-radius: 4px;
     -fx-padding: 3 7 3 7;
     -fx-font-size: 12px;
+    -fx-max-width: infinity;
 }
 
 .path-field:focused { -fx-border-color: #4b8cf5; }

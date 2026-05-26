@@ -35,6 +35,8 @@ public class Controller {
     @FXML
     private TextField remoteCurrentPath; // show current path for pwd cmd
     @FXML
+    private TextField localCurrentPath;
+    @FXML
     private TextField mkdirName; // name the dir to create
 
     @FXML
@@ -88,6 +90,8 @@ public class Controller {
         log("Welcome to FTP Client. Ready to connect.");
 
         remoteListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        localCurrentPath.setText(handleLocalPath());
 
         rmdirBtn.disableProperty().bind(
                 Bindings.isEmpty(remoteListView.getSelectionModel().getSelectedItems()));
@@ -578,5 +582,10 @@ public class Controller {
             log("[ERROR] During printing working directory: " + e.getMessage());
         }
         return finalResult;
+    }
+
+    @FXML
+    private String handleLocalPath() {
+        return System.getProperty("user.dir");
     }
 }

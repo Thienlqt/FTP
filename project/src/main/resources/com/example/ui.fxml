@@ -7,7 +7,7 @@
 <?import javafx.*?>
 
 
-<StackPane xmlns="http://javafx.com/javafx/17"
+<StackPane xmlns="http://javafx.com/javafx/21"
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.example.Controller"
            styleClass="root">
@@ -56,10 +56,16 @@
         <center>
             <SplitPane dividerPositions="0.55" VBox.vgrow="ALWAYS">
                 <VBox styleClass="panel" SplitPane.resizableWithParent="true">
-                    <HBox styleClass="path-bar" alignment="CENTER_LEFT" spacing="6">
-                        <padding><Insets top="6" right="10" bottom="6" left="10"/></padding>
-                        <Label text="Remote path:" styleClass="field-label"/>
-                        <TextField fx:id="remoteCurrentPath" editable="false" HBox.hgrow="ALWAYS" styleClass="input-field"/>                    </HBox>
+                    <HBox styleClass="path-bar" alignment="CENTER_LEFT" spacing="10">
+                        <VBox HBox.hgrow="ALWAYS" spacing="4">
+                            <padding><Insets top="6" right="10" bottom="6" left="10"/></padding>
+                            <Label text="Remote path:" styleClass="field-label"/>
+                            <TextField fx:id="remoteCurrentPath" editable="false" HBox.hgrow="ALWAYS" styleClass="path-field"/>   
+                            
+                            <Label text="Local path:" styleClass="field-label"/>
+                            <TextField fx:id="localCurrentPath" editable="false" styleClass="path-field"/> 
+                        </VBox>
+                    </HBox>
                     <ListView fx:id="remoteListView" VBox.vgrow="ALWAYS" styleClass="file-list"/>
                     <HBox fx:id="breadcrumbBar" styleClass="panel-statusbar" alignment="CENTER_LEFT">
                         <padding><Insets top="3" right="10" bottom="3" left="10"/></padding>
