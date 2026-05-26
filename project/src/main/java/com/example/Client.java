@@ -63,7 +63,16 @@ public class Client {
         return pasvMode;
     }
 
-    private String readResponse() throws IOException {
+    // Bring response from Server to UI
+    private StringBuilder logBuffer = new StringBuilder();
+
+    public String pullLogs() {
+        String logs = logBuffer.toString();
+        logBuffer.setLength(0);
+        return logs;
+    }
+
+    public String readResponse() throws IOException {
         StringBuilder sb = new StringBuilder();
         String line;
         try {
@@ -80,7 +89,10 @@ public class Client {
         } catch (IOException e) {
             throw new IOException("Failed reading response: " + e.getMessage());
         }
-        return sb.toString();
+
+        String finalResponse = sb.toString();
+        logBuffer.append(finalResponse); 
+        return finalResponse;
     }
 
     public String pwd() throws IOException {

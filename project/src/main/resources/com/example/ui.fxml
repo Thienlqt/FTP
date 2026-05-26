@@ -81,6 +81,14 @@
                         <Button text="Clear" onAction="#handleClearLog" styleClass="btn-go"/>
                     </HBox>
                     <TextArea fx:id="logArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS" styleClass="log-area"/>
+
+                    <HBox styleClass="path-bar" alignment="CENTER_LEFT" spacing="6">
+                        <padding><Insets top="6" right="10" bottom="6" left="10"/></padding>
+                        <Label text="Server Response Log" styleClass="field-label"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="Clear" onAction="#handleClearLog" styleClass="btn-go"/>
+                    </HBox>
+                    <TextArea fx:id="responseServerArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS" styleClass="log-area"/>
                 </VBox>
             </SplitPane>
         </center>

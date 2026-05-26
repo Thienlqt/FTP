@@ -42,6 +42,8 @@ public class Controller {
     @FXML
     private TextArea logArea;
     @FXML
+    private TextArea responseServerArea;
+    @FXML
     private TextArea dirsToDelete;
     @FXML
     private TextArea filesToDelete;
@@ -112,8 +114,7 @@ public class Controller {
                         String absolutePath = buildFullPath(currentPath, folderName);
 
                         navigateToAbsolutePath(absolutePath);
-                    }
-                    else {
+                    } else {
                         log("[INFO] Selected item is not a dir!");
                     }
                 }
@@ -126,12 +127,15 @@ public class Controller {
         Platform.runLater(() -> logArea.appendText(message + "\r\n"));
     }
 
+    private void serverLog(String message) {
+        Platform.runLater(() -> responseServerArea.appendText(message + "\r\n"));
+    }
+
     public void handleClearLog() {
         try {
             logArea.clear();
             log("[INFO] Clearing log successfull!");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log("[ERROR] During clearing log:  " + e.getMessage());
         }
     }
@@ -153,15 +157,18 @@ public class Controller {
             ftpClient = new Client();
             ftpClient.connect(host, port);
             log("[INFO] Connected to " + host + " on " + port);
+            serverLog(ftpClient.pullLogs());
 
             ftpClient.login(user, pass);
             log("[INFO] Log in with " + user);
+            serverLog(ftpClient.pullLogs());
 
             statusLabel.setText("● Connected");
             statusLabel.getStyleClass().remove("status-disconnected");
             statusLabel.getStyleClass().add("status-connected");
             bottomStatusLabel.setText("Connected to " + host);
             handleLs();
+            serverLog(ftpClient.pullLogs());
             remoteCurrentPath.setText(handlePwd());
 
             actionToolbar.setDisable(false);
@@ -169,6 +176,7 @@ public class Controller {
             disconnectBtn.setDisable(false);
 
             log("[INFO] Connected successfully!");
+            serverLog(ftpClient.pullLogs());
         } catch (NumberFormatException e) {
             e.printStackTrace();
             log("[ERROR] Port must be a valid number: " + e.getMessage());
@@ -186,9 +194,11 @@ public class Controller {
             try {
                 ftpClient.quit();
                 log("[INFO] Disconnect from server.");
+                serverLog(ftpClient.pullLogs());
             } catch (Exception e) {
                 e.printStackTrace();
                 log("[ERROR] During disconnection: " + e.getMessage());
+                serverLog(ftpClient.pullLogs());
             }
 
             statusLabel.setText("● Disconnected");
@@ -265,7 +275,7 @@ public class Controller {
     }
 
     private String buildFullPath(String currentPath, String targetItemName) {
-        if (currentPath.isEmpty() && currentPath != null) {
+        if (!currentPath.isEmpty() && currentPath != null) {
             currentPath = "/";
         }
 
@@ -289,9 +299,12 @@ public class Controller {
             // in order to be able to display to the field remoteListView in UI.
             remoteListView.setItems(FXCollections.observableArrayList(ftpClient.ls()));
             log("[INFO] Listed directories & files successfully!");
+            serverLog(ftpClient.pullLogs());
         } catch (Exception e) {
             e.printStackTrace();
             log("[ERROR] During listing directory & files: " + e.getMessage());
+            serverLog(ftpClient.pullLogs());
+
         }
     }
 
@@ -342,7 +355,7 @@ public class Controller {
     /* ── mkdir ─────────────────────────────────────────────── */
 
     @FXML
-    public void handleMkdir() throws IOException{
+    public void handleMkdir() throws IOException {
         String dirName = mkdirName.getText().trim();
         if (dirName.isEmpty()) {
             log("[WARN] Folder name cannot be empty!");
@@ -351,16 +364,16 @@ public class Controller {
         try {
             ftpClient.mkdir(dirName);
             log("[INFO] Created directory '" + dirName + "' successfully!");
+            serverLog(ftpClient.pullLogs());
 
             hideMkdirForm(); // close the form immediately after the dir was created
             handleLs(); // refresh the list of files and folders to see the newly created dir
 
-        } 
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             log("[ERROR] IOException: " + e.getMessage());
-        }
-        catch (Exception e) {
+            serverLog(ftpClient.pullLogs());
+        } catch (Exception e) {
             e.printStackTrace();
             log("[ERROR] During creating directory: " + e.getMessage());
         }
@@ -403,6 +416,8 @@ public class Controller {
                 ftpClient.rmdir(selectedItem);
             }
             log("[INFO] Directory removed successfully!");
+            serverLog(ftpClient.pullLogs());
+
             hideRmdirForm();
             handleLs();
         } catch (Exception e) {
@@ -445,11 +460,15 @@ public class Controller {
                 ftpClient.del(selectedItem);
             }
             log("[INFO] Files deleted successfully!");
+            serverLog(ftpClient.pullLogs());
+
             hideDelForm();
             handleLs();
         } catch (Exception e) {
             e.printStackTrace();
             log("[ERROR] During deleting files: " + e.getMessage());
+            serverLog(ftpClient.pullLogs());
+
         }
     }
 
@@ -462,7 +481,7 @@ public class Controller {
             File selectedDir = dirChooser.showDialog(stage);
             if (selectedDir != null) {
                 String chosenDirPath = selectedDir.getAbsolutePath();
-            
+
                 for (String fileToDownload : contentsToDownload) {
                     int lastSlashIndex = fileToDownload.lastIndexOf("/");
                     String remoteFilename = fileToDownload;
@@ -476,14 +495,17 @@ public class Controller {
                     ftpClient.get(fileToDownload, localSavePath);
 
                     log("[INFO] Downloaded: " + remoteFilename + " -> " + chosenDirPath);
+                    serverLog(ftpClient.pullLogs());
                 }
                 log("[INFO] All selected files downloaded successfully!");
             } else {
                 log("[INFO] Download cancelled by user.");
+                serverLog(ftpClient.pullLogs());
             }
         } catch (Exception e) {
             e.printStackTrace();
             log("[ERROR] During download: " + e.getMessage());
+            serverLog(ftpClient.pullLogs());
         }
     }
 
@@ -508,6 +530,7 @@ public class Controller {
                     ftpClient.put(localFilename, remoteFilename);
 
                     log("[INFO] Uploaded: \n" + localFilename + "\n");
+                    serverLog(ftpClient.pullLogs());
                 }
                 handleLs();
                 log("[INFO] All selected files uploaded successfully!");
@@ -530,7 +553,7 @@ public class Controller {
         breadcrumbBar.getChildren().add(rootLink);
 
         if (fullPath.equals("/") || fullPath.isEmpty()) {
-            return; 
+            return;
         }
 
         // Split path (e.g., "/var/www/html" becomes ["", "var", "www", "html"])
@@ -538,14 +561,15 @@ public class Controller {
         StringBuilder builtPath = new StringBuilder();
 
         for (String part : parts) {
-            if (part.trim().isEmpty()) continue; // skip empty splits
+            if (part.trim().isEmpty())
+                continue; // skip empty splits
 
             builtPath.append("/").append(part);
             String targetPath = builtPath.toString(); // final copy for the lambda
 
             Label separator = new Label(" > ");
             Hyperlink partLink = new Hyperlink(part);
-            
+
             // When this part of the path is clicked, jump straight to it
             partLink.setOnAction(e -> navigateToAbsolutePath(targetPath));
 
@@ -563,9 +587,11 @@ public class Controller {
 
             updateBreadcrumbs(handlePwd());
             log("[INFO] Opened directory: " + handlePwd());
+            serverLog(ftpClient.pullLogs());
         } catch (Exception e) {
             e.printStackTrace();
-            log("[ERROR] During navigating to directory " + targetAbsolutePath + ": " + e.getMessage()); 
+            log("[ERROR] During navigating to directory " + targetAbsolutePath + ": " + e.getMessage());
+            serverLog(ftpClient.pullLogs());
         }
     }
 
@@ -574,8 +600,9 @@ public class Controller {
         String finalResult = "";
         try {
             String rawResponse = ftpClient.pwd();
-            String pathFromRawResponse = rawResponse.substring(rawResponse.indexOf("\"") + 1, rawResponse.lastIndexOf("\""));
-            
+            String pathFromRawResponse = rawResponse.substring(rawResponse.indexOf("\"") + 1,
+                    rawResponse.lastIndexOf("\""));
+
             finalResult = pathFromRawResponse;
         } catch (Exception e) {
             e.printStackTrace();
