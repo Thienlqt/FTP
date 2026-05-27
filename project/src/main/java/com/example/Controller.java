@@ -143,6 +143,15 @@ public class Controller {
         }
     }
 
+        public void handleClearServerLog() {
+        try {
+            responseServerArea.clear();
+            serverLog("[INFO] Clear messages successfully!");
+        } catch (Exception e) {
+            log("[ERROR] During clearing log:  " + e.getMessage());
+        }
+    }
+
     /* ── connect() ─────────────────────────────────────────────── */
 
     @FXML
@@ -285,7 +294,7 @@ public class Controller {
     }
 
     private String buildFullPath(String currentPath, String targetItemName) {
-        if (!currentPath.isEmpty() && currentPath != null) {
+        if (currentPath.isEmpty() || currentPath == null) {
             currentPath = "/";
         }
 
@@ -637,19 +646,20 @@ public class Controller {
                 String dirToCd = anyCmd.substring(3).trim();
                 navigateToAbsolutePath(dirToCd);
             } else if (anyCmd.equals("pwd")) {
-                handlePwd();
+                String pwd = handlePwd();
+                log("[INFO] Current directory: " + pwd);
             } else if (anyCmd.startsWith("get ")) {
                 String fileFullPathToGet = anyCmd.substring(4).trim();
                 int slashIndex = fileFullPathToGet.lastIndexOf("/");
 
-                String filename = fileFullPathToGet.substring(slashIndex);
+                String filename = fileFullPathToGet.substring(slashIndex + 1);
 
                 ftpClient.get(fileFullPathToGet, filename);
             } else if (anyCmd.startsWith("put ")) {
                 String fileFullPathToUpload = anyCmd.substring(4).trim();
                 int slashIndex = fileFullPathToUpload.lastIndexOf("/");
 
-                String filename = fileFullPathToUpload.substring(slashIndex);
+                String filename = fileFullPathToUpload.substring(slashIndex + 1);
                 ftpClient.put(fileFullPathToUpload, filename);
             } else if (anyCmd.startsWith("del ")) {
                 String fileToDel = anyCmd.substring(4).trim();
@@ -658,13 +668,12 @@ public class Controller {
                 String dirToMake = anyCmd.substring(6).trim();
                 ftpClient.mkdir(dirToMake);
             } else if (anyCmd.startsWith("rmdir ")) {
-                String dirToRm = anyCmd.substring(6);
+                String dirToRm = anyCmd.substring(6).trim();
                 ftpClient.rmdir(dirToRm);
             }
             rawCmdField.clear();
         } catch (Exception e) {
             log("any error occurs: " + e.getMessage());
-            serverLog(ftpClient.pullLogs());
         }
     }
 }

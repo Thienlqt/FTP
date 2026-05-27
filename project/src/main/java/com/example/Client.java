@@ -52,7 +52,15 @@ public class Client {
         int start = pasvMessage.indexOf("(");
         int end = pasvMessage.indexOf(")");
 
+        if (start == -1 || end == -1) {
+            throw new IOException("Invalid PASV response format: " + pasvMessage);
+        }
+
         String[] parts = pasvMessage.substring(start + 1, end).split(",");
+        if (parts.length < 6) {
+            throw new IOException("Invalid PASV response - insufficient address parts: " + pasvMessage);
+        }
+
         String host = parts[0] + "." + parts[1] + "." + parts[2] + "." + parts[3];
 
         // << 8 means shifting the part1 to the left by 8 bits
@@ -82,7 +90,17 @@ public class Client {
                         && Character.isDigit(line.charAt(0))
                         && Character.isDigit(line.charAt(1))
                         && Character.isDigit(line.charAt(2))
-                        && line.charAt(3) == ' ') {
+                        && (line.charAt(3) == ' ' || line.charAt(3) == '-')) {
+                    // If it's a multi-line response (contains '-'), keep reading until we find the final line
+                    if (line.charAt(3) == '-') {
+                        String code = line.substring(0, 3);
+                        while ((line = in.readLine()) != null) {
+                            sb.append(line).append("\n");
+                            if (line.length() >= 4 && line.startsWith(code + " ")) {
+                                break;
+                            }
+                        }
+                    }
                     break;
                 }
             }
