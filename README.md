@@ -55,12 +55,15 @@ JavaFX 21 is pulled in automatically by Maven; no separate JavaFX installation i
 **Run directly with Maven (recommended during development):**
 
 ```bash
+cd project
 mvn javafx:run
 ```
 
 **Build a fat JAR and run it:**
 
 ```bash
+cd project
+mvn clean
 mvn package
 java -jar target/project-1.0-SNAPSHOT.jar
 ```
