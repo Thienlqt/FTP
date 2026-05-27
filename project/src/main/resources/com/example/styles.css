@@ -371,6 +371,12 @@
 }
 .btn-form-danger:hover { -fx-background-color: #e74c3c; }
 
+.split-pane {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+    -fx-background-color: transparent;
+}
+
 /* ── SplitPane divider ───────────────────────────────────── */
 .split-pane-divider {
     -fx-background-color: #33373f;

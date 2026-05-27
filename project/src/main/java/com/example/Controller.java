@@ -14,6 +14,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
@@ -38,6 +39,8 @@ public class Controller {
     private TextField localCurrentPath;
     @FXML
     private TextField mkdirName; // name the dir to create
+    @FXML
+    private TextField rawCmdField;
 
     @FXML
     private TextArea logArea;
@@ -177,6 +180,13 @@ public class Controller {
 
             log("[INFO] Connected successfully!");
             serverLog(ftpClient.pullLogs());
+
+            rawCmdField.setOnKeyPressed(e -> {
+                if (e.getCode() == KeyCode.ENTER) {
+                    handleRawCmd();
+                    handleLs();
+                }
+            });
         } catch (NumberFormatException e) {
             e.printStackTrace();
             log("[ERROR] Port must be a valid number: " + e.getMessage());
@@ -486,7 +496,7 @@ public class Controller {
                     int lastSlashIndex = fileToDownload.lastIndexOf("/");
                     String remoteFilename = fileToDownload;
                     if (lastSlashIndex >= 0) {
-                        remoteFilename = fileToDownload.substring(lastSlashIndex + 1);
+                        remoteFilename = fileToDownload.substring(lastSlashIndex);
                     }
 
                     File localSaveFile = new File(selectedDir, remoteFilename);
@@ -614,5 +624,47 @@ public class Controller {
     @FXML
     private String handleLocalPath() {
         return System.getProperty("user.dir");
+    }
+
+    @FXML
+    private void handleRawCmd() {
+        try {
+            String anyCmd = rawCmdField.getText().trim();
+
+            if (anyCmd.equals("ls")) {
+                handleLs();
+            } else if (anyCmd.startsWith("cd ")) {
+                String dirToCd = anyCmd.substring(3).trim();
+                navigateToAbsolutePath(dirToCd);
+            } else if (anyCmd.equals("pwd")) {
+                handlePwd();
+            } else if (anyCmd.startsWith("get ")) {
+                String fileFullPathToGet = anyCmd.substring(4).trim();
+                int slashIndex = fileFullPathToGet.lastIndexOf("/");
+
+                String filename = fileFullPathToGet.substring(slashIndex);
+
+                ftpClient.get(fileFullPathToGet, filename);
+            } else if (anyCmd.startsWith("put ")) {
+                String fileFullPathToUpload = anyCmd.substring(4).trim();
+                int slashIndex = fileFullPathToUpload.lastIndexOf("/");
+
+                String filename = fileFullPathToUpload.substring(slashIndex);
+                ftpClient.put(fileFullPathToUpload, filename);
+            } else if (anyCmd.startsWith("del ")) {
+                String fileToDel = anyCmd.substring(4).trim();
+                ftpClient.del(fileToDel);
+            } else if (anyCmd.startsWith("mkdir ")) {
+                String dirToMake = anyCmd.substring(6).trim();
+                ftpClient.mkdir(dirToMake);
+            } else if (anyCmd.startsWith("rmdir ")) {
+                String dirToRm = anyCmd.substring(6);
+                ftpClient.rmdir(dirToRm);
+            }
+            rawCmdField.clear();
+        } catch (Exception e) {
+            log("any error occurs: " + e.getMessage());
+            serverLog(ftpClient.pullLogs());
+        }
     }
 }

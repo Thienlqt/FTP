@@ -54,7 +54,7 @@
         </top>
 
         <center>
-            <SplitPane dividerPositions="0.55" VBox.vgrow="ALWAYS">
+            <SplitPane dividerPositions="0.55" VBox.vgrow="ALWAYS" styleClass="split-pane">
                 <VBox styleClass="panel" SplitPane.resizableWithParent="true">
                     <HBox styleClass="path-bar" alignment="CENTER_LEFT" spacing="10">
                         <VBox HBox.hgrow="ALWAYS" spacing="4">
@@ -67,7 +67,10 @@
                         </VBox>
                     </HBox>
                     <ListView fx:id="remoteListView" VBox.vgrow="ALWAYS" styleClass="file-list"/>
+                    <TextField fx:id="rawCmdField" editable="true" HBox.hgrow="ALWAYS" styleClass="path-field"/>   
+                    
                     <HBox fx:id="breadcrumbBar" styleClass="panel-statusbar" alignment="CENTER_LEFT">
+                    
                         <padding><Insets top="3" right="10" bottom="3" left="10"/></padding>
                         <Label fx:id="remoteCountLabel" text="0 items" styleClass="statusbar-text"/>
                     </HBox>
