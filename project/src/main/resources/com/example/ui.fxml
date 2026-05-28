@@ -40,15 +40,15 @@
                     <padding><Insets top="4" right="12" bottom="4" left="12"/></padding>
                     <Button text="LIST" fx:id="lsBtn" onAction="#handleLs" />
                     
-                    <Button text="📁  New Folder" onAction="#showMkdirForm"  styleClass="btn-tool"/>
+                    <Button text="New Directory" onAction="#showMkdirForm"  styleClass="btn-tool"/>
                     
-                    <Button fx:id="rmdirBtn" text="🗑  Remove Dir" onAction="#showRmdirForm"  styleClass="btn-tool"/>
+                    <Button fx:id="rmdirBtn" text="Remove Dir" onAction="#showRmdirForm"  styleClass="btn-tool"/>
                     <Separator/>
-                    <Button fx:id = "downBtn" text="⬇  Download"  onAction="#handleGet"   styleClass="btn-tool"/>
-                    <Button text="⬆  Upload"    onAction="#handlePut"   styleClass="btn-tool"/>
-                    <Button fx:id="delBtn" text="✕  Delete"     onAction="#showDelForm"   styleClass="btn-tool-danger"/>
+                    <Button fx:id = "downBtn" text="Download"  onAction="#handleGet"   styleClass="btn-tool"/>
+                    <Button text="Upload"    onAction="#handlePut"   styleClass="btn-tool"/>
+                    <Button fx:id="delBtn" text="Delete"     onAction="#showDelForm"   styleClass="btn-tool-danger"/>
                     <Separator/>
-                    <Button text="📄  PWD"       onAction="#handlePwd"   styleClass="btn-tool"/>
+                    <Button text="PWD"       onAction="#handlePwd"   styleClass="btn-tool"/>
                 </ToolBar>
             </VBox>
         </top>
@@ -67,6 +67,8 @@
                         </VBox>
                     </HBox>
                     <ListView fx:id="remoteListView" VBox.vgrow="ALWAYS" styleClass="file-list"/>
+
+                    <Label text="Raw Command" styleClass="field-label"/>
                     <TextField fx:id="rawCmdField" editable="true" HBox.hgrow="ALWAYS" styleClass="path-field"/>   
                     
                     <HBox fx:id="breadcrumbBar" styleClass="panel-statusbar" alignment="CENTER_LEFT">
@@ -109,15 +111,14 @@
     <StackPane fx:id="mkdirForm" visible="false" maxHeight="-Infinity">
         <VBox maxWidth="300" styleClass="vbox-form-card">
             <HBox alignment="CENTER_LEFT" spacing="10" styleClass="form-card-header">
-                <Label text="📁" styleClass="form-icon-green"/>
                 <VBox spacing="3">
-                    <Label text="New Folder" styleClass="form-card-title"/>
+                    <Label text="New Directory" styleClass="form-card-title"/>
                     <Label text="Create a directory on the remote server" styleClass="form-card-sub"/>
                 </VBox>
             </HBox>
             <Region styleClass="form-header-sep"/>
             <VBox spacing="12" styleClass="form-card-body">
-                <Label text="FOLDER NAME" styleClass="form-field-label"/>
+                <Label text="DIRECTORY NAME" styleClass="form-field-label"/>
                 <TextField fx:id="mkdirName" promptText="e.g. New_Folder"
                         onAction="#handleMkdir" styleClass="input-field"/>
                 <HBox alignment="CENTER_RIGHT" spacing="8">
@@ -132,7 +133,6 @@
     <StackPane fx:id="rmdirForm" visible="false" maxHeight="-Infinity">
         <VBox maxWidth="320" styleClass="vbox-form-card">
             <HBox alignment="CENTER_LEFT" spacing="10" styleClass="form-card-header">
-                <Label text="🗑" styleClass="form-icon-red"/>
                 <VBox spacing="3">
                     <Label text="Remove Directories" styleClass="form-card-title"/>
                     <Label text="This action cannot be undone" styleClass="form-card-sub form-card-sub-danger"/>
@@ -155,7 +155,6 @@
     <StackPane fx:id="delForm" visible="false" maxHeight="-Infinity">
         <VBox maxWidth="320" styleClass="vbox-form-card">
             <HBox alignment="CENTER_LEFT" spacing="10" styleClass="form-card-header">
-                <Label text="✕" styleClass="form-icon-red"/>
                 <VBox spacing="3">
                     <Label text="Delete Files" styleClass="form-card-title"/>
                     <Label text="This action cannot be undone" styleClass="form-card-sub form-card-sub-danger"/>
