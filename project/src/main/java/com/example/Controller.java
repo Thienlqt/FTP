@@ -75,7 +75,7 @@ public class Controller {
     private Label bottomStatusLabel;
 
     @FXML
-    private ToolBar actionToolbar; // all cmds are managed here
+    private ToolBar actionToolbar; // all core cmds buttons are managed here
 
     @FXML
     private ListView<String> remoteListView; // file list from "ls" command
@@ -575,7 +575,6 @@ public class Controller {
             return;
         }
 
-        // Split path (e.g., "/var/www/html" becomes ["", "var", "www", "html"])
         String[] parts = fullPath.split("/");
         StringBuilder builtPath = new StringBuilder();
 
@@ -589,7 +588,7 @@ public class Controller {
             Label separator = new Label(" > ");
             Hyperlink partLink = new Hyperlink(part);
 
-            // When this part of the path is clicked, jump straight to it
+            // When the hyperlinked text is clicked, jump straight to it
             partLink.setOnAction(e -> navigateToAbsolutePath(targetPath));
 
             breadcrumbBar.getChildren().addAll(separator, partLink);
